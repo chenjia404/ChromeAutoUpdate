@@ -276,6 +276,10 @@ namespace ChromeAutoUpdate
             {
                 File.Delete("ChromeAutoUpdate.exe.new");
             }
+            if (File.Exists(app_filename + ".old"))
+            {
+                File.Delete(app_filename + ".old");
+            }
 
 
             //升级自身
@@ -336,7 +340,7 @@ namespace ChromeAutoUpdate
                 p.Start();//启动程序  
 
                 string cmd = @"7zr.exe -y e " + tmp_file + System.Environment.NewLine;
-                cmd += "ren " + app_filename + " " + app_filename + "." + AppFileVersion.ToString() + System.Environment.NewLine;
+                cmd += "ren " + app_filename + " " + app_filename + ".old" + System.Environment.NewLine;
                 cmd += @"7zr.exe -y x chrome.7z" + Environment.NewLine;
                 cmd += "del " + tmp_file + Environment.NewLine + "exit" + Environment.NewLine;
 
