@@ -202,6 +202,8 @@ namespace ChromeAutoUpdate
 
             string app_filename = "Chrome-bin/chrome.exe";
 
+            string Channel = "Canary";
+
             bool app_is_run = false;
 
             if (File.Exists(Application.StartupPath + @"\config.ini"))
@@ -255,6 +257,12 @@ namespace ChromeAutoUpdate
                 string ini_user_agent = config.ReadValue("app", "user_agent");
                 if (ini_user_agent.Length > 3)
                     user_agent = ini_user_agent;
+
+
+
+                string ini_Channel = config.ReadValue("app", "Channel");
+                if (ini_Channel.Length > 3)
+                    Channel = ini_Channel;
             }
 
             user_agent += " ChromeAutoUpdate/" + Application.ProductVersion.ToString();
@@ -322,7 +330,7 @@ namespace ChromeAutoUpdate
             }
 
 
-            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + IntPtr.Size.ToString());
+            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + IntPtr.Size.ToString() + "&Channel=" + Channel);
             if (api.Length > 10)
             {
                 this.Visible = true;
