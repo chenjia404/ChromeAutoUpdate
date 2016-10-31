@@ -253,7 +253,7 @@ namespace ChromeAutoUpdate
 
 
                 string ini_user_agent = config.ReadValue("app", "user_agent");
-                if (ini_index.Length > 3)
+                if (ini_user_agent.Length > 3)
                     user_agent = ini_user_agent;
             }
 
