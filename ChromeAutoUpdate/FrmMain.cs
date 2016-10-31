@@ -216,16 +216,21 @@ namespace ChromeAutoUpdate
                     config.Writue("config", "version", "1");
                     config.Writue("server", "Params", "");
                     config.Writue("app", "Params", "");
-                    config.Writue("app", "user_agent", "\"Mozilla / 5.0(Windows NT 10.0; Win64; x64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 56.0.2902.0 Safari / 537.36\"");
-                    user_agent = "Mozilla / 5.0(Windows NT 10.0; Win64; x64) AppleWebKit / 537.36(KHTML, like Gecko) Chrome / 56.0.2902.0 Safari / 537.36";
+                    config.Writue("app", "user_agent", "\"Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36\"");
+                    user_agent = "Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36";
                 }
-                else if(config_version == "1")
+                else if (config_version == "1")
                 {
                     config.Writue("server", "update_url", update_url);
                     config.Writue("server", "app_update_url", app_update_url);
                     config.Writue("app", "version", "2");
                 }
-
+                else if (config_version == "2")
+                {
+                    config.Writue("app", "version", "3");
+                    config.Writue("app", "user_agent", "\"Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36\"");
+                    user_agent = "Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36";
+                }
 
                 string ini_app_update_url = config.ReadValue("server", "app_update_url");
                 if (ini_app_update_url.Length > 3)
@@ -340,7 +345,7 @@ namespace ChromeAutoUpdate
                 p.Start();//启动程序  
 
                 string cmd = @"7zr.exe -y e " + tmp_file + System.Environment.NewLine;
-                cmd += "ren " + app_filename + " " + app_filename + ".old" + System.Environment.NewLine;
+                cmd += "move " + app_filename + " chrome.exe.old" + System.Environment.NewLine;
                 cmd += @"7zr.exe -y x chrome.7z" + Environment.NewLine;
                 cmd += "del " + tmp_file + Environment.NewLine + "exit" + Environment.NewLine;
 
