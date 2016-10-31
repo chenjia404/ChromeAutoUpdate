@@ -223,11 +223,11 @@ namespace ChromeAutoUpdate
                 {
                     config.Writue("server", "update_url", update_url);
                     config.Writue("server", "app_update_url", app_update_url);
-                    config.Writue("app", "version", "2");
+                    config.Writue("config", "version", "2");
                 }
                 else if (config_version == "2")
                 {
-                    config.Writue("app", "version", "3");
+                    config.Writue("config", "version", "3");
                     config.Writue("app", "user_agent", "\"Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36\"");
                     user_agent = "Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36";
                 }
