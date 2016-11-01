@@ -15,6 +15,9 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Management;
+using System.Security;
+using System.Security.Permissions;
+using System.Security.AccessControl;
 
 namespace ChromeAutoUpdate
 {
@@ -52,11 +55,11 @@ namespace ChromeAutoUpdate
 
             WebClient wc = new WebClient();
             try
-            { 
+            {
                 wc.Headers.Add(HttpRequestHeader.UserAgent, this.user_agent());
                 wc.DownloadFile(url, filename);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
@@ -98,7 +101,7 @@ namespace ChromeAutoUpdate
                     }
                 }
             }
-            catch 
+            catch
             {
             }
             return macAddress;
@@ -187,6 +190,73 @@ namespace ChromeAutoUpdate
         }
 
 
+        /// <summary>
+        /// 获取chrome安装目录
+        /// </summary>
+        /// <returns></returns>
+        public string getChromePath()
+        {
+            //查看一般安装路径
+            string ProgramFiles = System.Environment.GetEnvironmentVariable("ProgramFiles");
+            string ProgramFiles_x86 = System.Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+            string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
+
+            if (Directory.Exists(ProgramFiles + @"\Google\Chrome\Application\"))
+            {
+                return ProgramFiles + @"\Google\Chrome\Application\";
+            }
+            if (Directory.Exists(ProgramFiles_x86 + @"\Google\Chrome\Application\"))
+            {
+                return ProgramFiles_x86 + @"\Google\Chrome\Application\";
+            }
+            if (Directory.Exists(localappdata + @"\Google\Chrome\Application\"))
+            {
+                return localappdata + @"\Google\Chrome\Application\";
+            }
+
+            //todo 查看默认浏览器
+
+            return "";
+        }
+
+
+        public string getAppFilename()
+        {
+            string app_path = Application.StartupPath + @"\Chrome-bin\";
+
+            string app_filename = "chrome.exe";
+
+            if (File.Exists(Application.StartupPath + @"\config.ini"))
+            {
+                INI config = new INI(Application.StartupPath + @"\config.ini");
+
+                string ini_path = config.ReadValue("app", "path");
+                if (ini_path.Length > 3)
+                    app_path = ini_path;
+                else
+                {
+                    //如果没有填写path，就使用当前chrome安装目录
+                    string chrome_path = getChromePath();
+                    if (chrome_path.Length > 5)
+                    {
+                        app_path = chrome_path;
+                        config.Writue("app", "path", app_path);
+                    }
+                }
+
+            }
+
+            string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
+
+            //替换环境变量
+            app_path = app_path.Replace("%localappdata%", localappdata);
+
+            app_filename = app_path + "chrome.exe";
+
+            return app_filename;
+        }
+
+
 
         public void update()
         {
@@ -200,7 +270,9 @@ namespace ChromeAutoUpdate
 
             string user_agent = "";
 
-            string app_filename = "Chrome-bin/chrome.exe";
+            string app_path = Application.StartupPath + @"\Chrome-bin\";
+
+            string app_filename = "chrome.exe";
 
             string Channel = "Canary";
 
@@ -259,21 +331,32 @@ namespace ChromeAutoUpdate
                     user_agent = ini_user_agent;
 
 
+                string ini_path = config.ReadValue("app", "path");
+                if (ini_path.Length > 3)
+                    app_path = ini_path;
+
 
                 string ini_Channel = config.ReadValue("app", "Channel");
                 if (ini_Channel.Length > 3)
                     Channel = ini_Channel;
             }
 
-            user_agent += " ChromeAutoUpdate/" + Application.ProductVersion.ToString();
 
+            string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
+
+            //替换环境变量
+            app_path = app_path.Replace("%localappdata%", localappdata);
+            log("安装目录:" + app_path);
+            app_filename = app_path + "chrome.exe";
+
+            user_agent += " ChromeAutoUpdate/" + Application.ProductVersion.ToString();
 
             if (File.Exists(app_filename))
             {
                 chromeParams += " --user-agent=\"" + user_agent + "\"";
                 chromeParams += " " + index;
                 //启动
-                Process.Start(Application.StartupPath + @"\" + app_filename, chromeParams);
+                Process.Start(app_filename, chromeParams);
                 app_is_run = true;
             }
 
@@ -307,7 +390,7 @@ namespace ChromeAutoUpdate
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message.ToString());
+                    log(ex.Message.ToString());
                 }
 
                 try
@@ -316,7 +399,7 @@ namespace ChromeAutoUpdate
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message.ToString());
+                    log(ex.Message.ToString());
                 }
 
             }
@@ -333,9 +416,9 @@ namespace ChromeAutoUpdate
             string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + IntPtr.Size.ToString() + "&Channel=" + Channel);
             if (api.Length > 10)
             {
-                this.Visible = true;
-                this.TopLevel = true;
-                lb_status.Text = "升级chrome";
+                //this.Visible = true;
+                //this.TopLevel = true;
+                //lb_status.Text = "升级chrome中";
 
 
                 string tmp_file = Path.GetTempFileName() + ".tmp";
@@ -353,15 +436,62 @@ namespace ChromeAutoUpdate
                 p.Start();//启动程序  
 
                 string cmd = @"7zr.exe -y e " + tmp_file + System.Environment.NewLine;
-                cmd += "move " + app_filename + " chrome.exe.old" + System.Environment.NewLine;
-                cmd += @"7zr.exe -y x chrome.7z" + Environment.NewLine;
+                cmd += "move \"" + app_filename + "\"  \"" + app_path + "chrome.exe.old\"" + System.Environment.NewLine;
+                cmd += @"7zr.exe -y x chrome.7z -oupdate" + Environment.NewLine;
                 cmd += "del " + tmp_file + Environment.NewLine + "exit" + Environment.NewLine;
 
                 //向CMD窗口发送输入信息：  
                 p.StandardInput.WriteLine(cmd);
                 string cmd_log = p.StandardOutput.ReadToEnd();
+                //记录cmd执行情况
                 log(cmd_log);
                 p.WaitForExit();//等待程序执行完退出进程
+
+                /** 解压完成，移动文件 **/
+                Version chromeVersion = new Version(FileVersionInfo.GetVersionInfo(@"update\Chrome-bin\chrome.exe").FileVersion);
+
+                //移动chrome.exe
+                log(@"update\Chrome-bin\chrome.exe" + "到" + app_filename);
+                File.Move(@"update\Chrome-bin\chrome.exe", app_filename);
+
+                try
+                {
+                    string move_dir = "xcopy /s /e /h \"" + Application.StartupPath + @"\update\Chrome-bin\" + chromeVersion.ToString() + "\\*\"  \"" + app_path + chromeVersion.ToString() + "\\\"" + Environment.NewLine + "exit" + Environment.NewLine;
+                    log(move_dir);
+
+                    //移动目录
+                    Process p2 = new Process();
+                    //要执行的程序名称，cmd  
+                    p2.StartInfo.FileName = "cmd.exe";
+                    p2.StartInfo.UseShellExecute = false;    //是否使用操作系统shell启动
+                    p2.StartInfo.RedirectStandardInput = true;//接受来自调用程序的输入信息
+                    p2.StartInfo.RedirectStandardOutput = true;//由调用程序获取输出信息
+                    p2.StartInfo.RedirectStandardError = true;//重定向标准错误输出
+                    p2.StartInfo.CreateNoWindow = true;//不显示程序窗口
+                    p2.Start();//启动程序  
+                    p2.StandardInput.WriteLine(move_dir);
+
+                    //记录cmd执行情况
+                    cmd_log = p2.StandardOutput.ReadToEnd();
+                    log(cmd_log);
+                    p2.WaitForExit();//等待程序执行完退出进程
+                }
+                catch (Exception ex)
+                {
+                    log(ex);
+
+                }
+
+                //删除目录
+                //Directory.Delete(Application.StartupPath + @"\update",true);
+
+                File.Delete("chrome.7z");
+
+
+            }
+            else
+            {
+                log("不需要更新" + AppFileVersion.ToString());
             }
 
             while (!File.Exists(app_filename))
@@ -374,11 +504,10 @@ namespace ChromeAutoUpdate
                 chromeParams += " --user-agent=\"" + user_agent + "\"";
                 chromeParams += " " + index;
                 //启动
-                Process.Start(Application.StartupPath + @"\" + app_filename, chromeParams);
+                Process.Start(app_filename, chromeParams);
             }
 
-
-            Application.Exit();
+            Application.ExitThread();
         }
 
 
@@ -396,7 +525,46 @@ namespace ChromeAutoUpdate
             if (processCount > 1)
                 Application.Exit();
 
-            string app_filename = "Chrome-bin/chrome.exe";
+            string app_filename = getAppFilename();
+
+            if (app_filename.IndexOf(@"C:\Program Files") >= 0)
+            {
+                /**
+              * 当前用户是管理员的时候，直接启动应用程序
+              * 如果不是管理员，则使用启动对象启动程序，以确保使用管理员身份运行
+              */
+                //获得当前登录的Windows用户标示
+                System.Security.Principal.WindowsIdentity identity = System.Security.Principal.WindowsIdentity.GetCurrent();
+                System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
+                //判断当前登录用户是否为管理员
+                if (principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator))
+                {
+                    //如果是管理员，则直接运行
+                    ;
+                }
+                else
+                {
+                    MessageBox.Show("您的chrome安装在系统目录，需要使用管理员方式启动");
+                    //创建启动对象
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.UseShellExecute = true;
+                    startInfo.WorkingDirectory = Environment.CurrentDirectory;
+                    startInfo.FileName = Application.ExecutablePath;
+                    //设置启动动作,确保以管理员身份运行
+                    startInfo.Verb = "runas";
+                    try
+                    {
+                        System.Diagnostics.Process.Start(startInfo);
+                    }
+                    catch
+                    {
+                        return;
+                    }
+                    //退出
+                    Application.Exit();
+                }
+            }
+
 
             if (File.Exists(app_filename))
             {
@@ -409,8 +577,16 @@ namespace ChromeAutoUpdate
                 this.TopLevel = true;
             }
 
-            Thread th = new Thread(update);
-            th.Start();
+            try
+            {
+
+                Thread th = new Thread(update);
+                th.Start();
+            }
+            catch (Exception ex)
+            {
+                log(ex);
+            }
         }
     }
 }
