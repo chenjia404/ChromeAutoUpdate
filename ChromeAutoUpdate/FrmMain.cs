@@ -56,12 +56,10 @@ namespace ChromeAutoUpdate
                 long totalBytes = myrp.ContentLength;
                 Stream st = myrp.GetResponseStream();
                 Stream so = new FileStream(filename, FileMode.Create);
-                long totalDownloadedByte = 0;
                 byte[] by = new byte[1024];
                 int osize = st.Read(by, 0, (int)by.Length);
                 while (osize > 0)
                 {
-                    totalDownloadedByte = osize + totalDownloadedByte;=
                     so.Write(by, 0, osize);
                     osize = st.Read(by, 0, (int)by.Length);
                 }
