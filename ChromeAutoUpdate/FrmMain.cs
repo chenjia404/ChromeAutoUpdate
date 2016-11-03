@@ -45,25 +45,45 @@ namespace ChromeAutoUpdate
 
 
 
-
+        /// <summary>
+        /// 下载文件
+        /// </summary>
+        /// <param name="url">url地址</param>
+        /// <param name="filename">本地文件，任意目录均可</param>
+        /// <returns></returns>
         public bool DownloadFile(string url, string filename)
         {
-            FileInfo fi = new FileInfo(filename);
-            var di = fi.Directory;
-            if (!di.Exists)
-                di.Create();
-
-            WebClient wc = new WebClient();
             try
             {
-                wc.Headers.Add(HttpRequestHeader.UserAgent, this.user_agent());
-                wc.DownloadFile(url, filename);
+                FileInfo fi = new FileInfo(filename);
+                var di = fi.Directory;
+                if (!di.Exists)
+                    di.Create();
+
+                HttpWebRequest Myrq = (HttpWebRequest)HttpWebRequest.Create(url);
+                Myrq.UserAgent = this.user_agent();
+                Myrq.Timeout = 10 * 1000;
+                HttpWebResponse myrp = (HttpWebResponse)Myrq.GetResponse();
+                long totalBytes = myrp.ContentLength;
+                Stream st = myrp.GetResponseStream();
+                Stream so = new FileStream(filename, FileMode.Create);
+                long totalDownloadedByte = 0;
+                byte[] by = new byte[1024];
+                int osize = st.Read(by, 0, (int)by.Length);
+                while (osize > 0)
+                {
+                    totalDownloadedByte = osize + totalDownloadedByte;=
+                    so.Write(by, 0, osize);
+                    osize = st.Read(by, 0, (int)by.Length);
+                }
+                so.Close();
+                st.Close();
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show(ex.ToString());
+                return false;
             }
-            return true;
         }
 
 
