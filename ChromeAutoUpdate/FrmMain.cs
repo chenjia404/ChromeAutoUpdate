@@ -281,7 +281,7 @@ namespace ChromeAutoUpdate
 
             string app_filename = "chrome.exe";
 
-            string Channel = "Canary";
+            string Channel = "Dev";
 
             bool app_is_run = false;
 
@@ -311,6 +311,12 @@ namespace ChromeAutoUpdate
                     config.Writue("config", "version", "3");
                     config.Writue("app", "user_agent", "\"Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36\"");
                     user_agent = "Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36";
+                }
+                else if (config_version == "3")
+                {
+                    //增加渠道默认参数
+                    config.Writue("config", "version", "4");
+                    config.Writue("app", "Channel", "Dev");
                 }
 
                 string ini_app_update_url = config.ReadValue("server", "app_update_url");
