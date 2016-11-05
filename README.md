@@ -47,4 +47,6 @@ Params=        #启动chrome的参数
 
 user_agent="Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36"
 
+path=C:\soft\ChromeAutoUpdate\ #chrome安装目录，需要 \ 结尾
+
 Channel=dev   #取值 'Stable','Beta','Dev','Canary'
