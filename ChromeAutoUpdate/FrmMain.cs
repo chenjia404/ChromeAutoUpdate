@@ -429,7 +429,15 @@ namespace ChromeAutoUpdate
 
 
                 string tmp_file = Path.GetTempFileName() + ".tmp";
-                DownloadFile(api, tmp_file);
+
+                ///多个下载地址重试
+                string[] urls = api.Split('|');
+                foreach(string url in urls)
+                {
+                    if (DownloadFile(api, tmp_file))
+                        break;
+                }
+                
 
                 //实例化process对象  
                 Process p = new Process();
