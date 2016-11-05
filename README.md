@@ -30,12 +30,21 @@ bug反馈联系微博@你的档案。
 #配置文件
 
 [server]
+
 update_url=http://chrome.wbdacdn.com/update.php             #主程序升级接口
+
 app_update_url=http://chrome.wbdacdn.com/app_update.php     #chrome升级接口
+
 [config]
+
 version=4      #配置文件版本，请勿修改
+
 [app]
+
 index=         #默认打开页面
+
 Params=        #启动chrome的参数
+
 user_agent="Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, like Gecko) Chrome/56.0.2902.0 Safari/537.36"
+
 Channel=dev   #取值 'Stable','Beta','Dev','Canary'
