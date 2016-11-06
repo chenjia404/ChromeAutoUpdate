@@ -292,6 +292,7 @@ namespace ChromeAutoUpdate
                     config.Writue("config", "version", "6");
                     config.Writue("server", "app_update_url", app_update_url);
                     config.Writue("app", "user_agent", "");
+                    config.Writue("app", "path", "");
                 }
 
                 string ini_app_update_url = config.ReadValue("server", "app_update_url");
