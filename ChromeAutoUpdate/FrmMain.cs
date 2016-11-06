@@ -480,7 +480,7 @@ namespace ChromeAutoUpdate
                 }
 
                 //删除目录
-                //Directory.Delete(Application.StartupPath + @"\update",true);
+                Directory.Delete(Application.StartupPath + @"\update",true);
 
                 File.Delete("chrome.7z");
 
