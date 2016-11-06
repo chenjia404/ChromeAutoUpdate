@@ -292,7 +292,7 @@ namespace ChromeAutoUpdate
                     config.Writue("config", "version", "6");
                     config.Writue("server", "app_update_url", app_update_url);
                     config.Writue("app", "user_agent", "");
-                    config.Writue("app", "path", "");
+                    config.Writue("app", "path", "");//默认为当前目录
                 }
 
                 string ini_app_update_url = config.ReadValue("server", "app_update_url");
@@ -416,7 +416,7 @@ namespace ChromeAutoUpdate
                 string[] urls = api.Split('|');
                 foreach(string url in urls)
                 {
-                    if (DownloadFile(api, tmp_file))
+                    if (DownloadFile(url, tmp_file))
                         break;
                 }
                 
