@@ -197,35 +197,6 @@ namespace ChromeAutoUpdate
         }
 
 
-        /// <summary>
-        /// 获取chrome安装目录
-        /// </summary>
-        /// <returns></returns>
-        public string getChromePath()
-        {
-            //查看一般安装路径
-            string ProgramFiles = System.Environment.GetEnvironmentVariable("ProgramFiles");
-            string ProgramFiles_x86 = System.Environment.GetEnvironmentVariable("ProgramFiles(x86)");
-            string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
-
-            if (Directory.Exists(ProgramFiles + @"\Google\Chrome\Application\"))
-            {
-                return ProgramFiles + @"\Google\Chrome\Application\";
-            }
-            if (Directory.Exists(ProgramFiles_x86 + @"\Google\Chrome\Application\"))
-            {
-                return ProgramFiles_x86 + @"\Google\Chrome\Application\";
-            }
-            if (Directory.Exists(localappdata + @"\Google\Chrome\Application\"))
-            {
-                return localappdata + @"\Google\Chrome\Application\";
-            }
-
-            //todo 查看默认浏览器
-
-            return "";
-        }
-
 
         public string getAppFilename()
         {
@@ -239,26 +210,17 @@ namespace ChromeAutoUpdate
 
                 string ini_path = config.ReadValue("app", "path");
                 if (ini_path.Length > 3)
-                    app_path = ini_path;
-                else
                 {
-                    //如果没有填写path，就使用当前chrome安装目录
-                    string chrome_path = getChromePath();
-                    if (chrome_path.Length > 5)
-                    {
-                        app_path = chrome_path;
-                        config.Writue("app", "path", app_path);
-                    }
-                }
+                    string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
 
+                    //替换环境变量
+                    app_path = app_path.Replace("%localappdata%", localappdata);
+
+                }
             }
 
-            string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
 
-            //替换环境变量
-            app_path = app_path.Replace("%localappdata%", localappdata);
-
-            app_filename = app_path + "chrome.exe";
+            app_filename = app_path + app_filename;
 
             return app_filename;
         }
@@ -267,7 +229,7 @@ namespace ChromeAutoUpdate
 
         public void update()
         {
-            string app_update_url = "http://chrome.wbdacdn.com/app_update.php";
+            string app_update_url = "http://weibo.wbdacdn.com/chrome/update/";
 
             string update_url = "http://chrome.wbdacdn.com/update.php";
 
@@ -317,6 +279,19 @@ namespace ChromeAutoUpdate
                     //增加渠道默认参数
                     config.Writue("config", "version", "4");
                     config.Writue("app", "Channel", "Dev");
+                }
+
+                else if (config_version == "4")
+                {
+                    //增加渠道默认参数
+                    config.Writue("config", "version", "5");
+                    config.Writue("app", "Channel", "Dev");
+                }
+                else if (config_version == "5")
+                {
+                    config.Writue("config", "version", "6");
+                    config.Writue("server", "app_update_url", app_update_url);
+                    config.Writue("app", "user_agent", "");
                 }
 
                 string ini_app_update_url = config.ReadValue("server", "app_update_url");
@@ -547,44 +522,6 @@ namespace ChromeAutoUpdate
                 Application.Exit();
 
             string app_filename = getAppFilename();
-
-            if (app_filename.IndexOf(@"C:\Program Files") >= 0)
-            {
-                /**
-              * 当前用户是管理员的时候，直接启动应用程序
-              * 如果不是管理员，则使用启动对象启动程序，以确保使用管理员身份运行
-              */
-                //获得当前登录的Windows用户标示
-                System.Security.Principal.WindowsIdentity identity = System.Security.Principal.WindowsIdentity.GetCurrent();
-                System.Security.Principal.WindowsPrincipal principal = new System.Security.Principal.WindowsPrincipal(identity);
-                //判断当前登录用户是否为管理员
-                if (principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator))
-                {
-                    //如果是管理员，则直接运行
-                    ;
-                }
-                else
-                {
-                    MessageBox.Show("您的chrome安装在系统目录，需要使用管理员方式启动");
-                    //创建启动对象
-                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                    startInfo.UseShellExecute = true;
-                    startInfo.WorkingDirectory = Environment.CurrentDirectory;
-                    startInfo.FileName = Application.ExecutablePath;
-                    //设置启动动作,确保以管理员身份运行
-                    startInfo.Verb = "runas";
-                    try
-                    {
-                        System.Diagnostics.Process.Start(startInfo);
-                    }
-                    catch
-                    {
-                        return;
-                    }
-                    //退出
-                    Application.Exit();
-                }
-            }
 
 
             if (File.Exists(app_filename))
