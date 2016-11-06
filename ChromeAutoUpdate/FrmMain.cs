@@ -342,7 +342,8 @@ namespace ChromeAutoUpdate
 
             if (File.Exists(app_filename))
             {
-                chromeParams += " --user-agent=\"" + user_agent + "\"";
+                if (user_agent.Length > 35)
+                    chromeParams += " --user-agent=\"" + user_agent + "\"";
                 chromeParams += " " + index;
                 //启动
                 Process.Start(app_filename, chromeParams);
@@ -414,12 +415,12 @@ namespace ChromeAutoUpdate
 
                 ///多个下载地址重试
                 string[] urls = api.Split('|');
-                foreach(string url in urls)
+                foreach (string url in urls)
                 {
                     if (DownloadFile(url, tmp_file))
                         break;
                 }
-                
+
 
                 //实例化process对象  
                 Process p = new Process();
@@ -480,7 +481,7 @@ namespace ChromeAutoUpdate
                 }
 
                 //删除目录
-                Directory.Delete(Application.StartupPath + @"\update",true);
+                Directory.Delete(Application.StartupPath + @"\update", true);
 
                 File.Delete("chrome.7z");
 
@@ -498,13 +499,14 @@ namespace ChromeAutoUpdate
 
             if (!app_is_run && File.Exists(app_filename))
             {
-                chromeParams += " --user-agent=\"" + user_agent + "\"";
+                if (user_agent.Length > 35)
+                    chromeParams += " --user-agent=\"" + user_agent + "\"";
                 chromeParams += " " + index;
                 //启动
                 Process.Start(app_filename, chromeParams);
             }
 
-            Application.ExitThread();
+            this.status = "exit";
         }
 
 
@@ -545,6 +547,16 @@ namespace ChromeAutoUpdate
             catch (Exception ex)
             {
                 log(ex);
+            }
+        }
+
+        public string status = "";
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (this.status == "exit")
+            {
+                Application.Exit();
             }
         }
     }
