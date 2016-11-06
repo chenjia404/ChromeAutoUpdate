@@ -522,7 +522,9 @@ namespace ChromeAutoUpdate
                 }
             }
             if (processCount > 1)
-                Application.Exit();
+            {
+                this.Close();
+            }
 
             string app_filename = getAppFilename();
 
@@ -556,7 +558,7 @@ namespace ChromeAutoUpdate
         {
             if (this.status == "exit")
             {
-                Application.Exit();
+                this.Close();
             }
         }
     }
