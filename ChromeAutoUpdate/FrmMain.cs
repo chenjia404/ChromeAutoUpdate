@@ -453,7 +453,7 @@ namespace ChromeAutoUpdate
 
                 try
                 {
-                    string move_dir = "xcopy /s /e /h \"" + Application.StartupPath + @"\update\Chrome-bin\" + chromeVersion.ToString() + "\\*\"  \"" + app_path + chromeVersion.ToString() + "\\\"" + Environment.NewLine + "exit" + Environment.NewLine;
+                    string move_dir = "xcopy /s /e /h /y \"" + Application.StartupPath + @"\update\Chrome-bin\" + chromeVersion.ToString() + "\\*\"  \"" + app_path + chromeVersion.ToString() + "\\\"" + Environment.NewLine + "exit" + Environment.NewLine;
                     log(move_dir);
 
                     //移动目录
