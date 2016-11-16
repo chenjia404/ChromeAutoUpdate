@@ -379,26 +379,19 @@ namespace ChromeAutoUpdate
             string updater = GetWebContent(update_url + "?v=" + Application.ProductVersion);
             if (updater.Length > 10)
             {
-                DownloadFile(updater, "ChromeAutoUpdate.exe.new");
                 try
                 {
-
-                    File.Move("ChromeAutoUpdate.exe", "ChromeAutoUpdate.exe.old");
+                    //需要判断文件是否成功下载，因为有时候会失败
+                    if (DownloadFile(updater, "ChromeAutoUpdate.exe.new"))
+                    {
+                        File.Move("ChromeAutoUpdate.exe", "ChromeAutoUpdate.exe.old");
+                        File.Move("ChromeAutoUpdate.exe.new", "ChromeAutoUpdate.exe");
+                    }
                 }
                 catch (Exception ex)
                 {
                     log(ex.Message.ToString());
                 }
-
-                try
-                {
-                    File.Move("ChromeAutoUpdate.exe.new", "ChromeAutoUpdate.exe");
-                }
-                catch (Exception ex)
-                {
-                    log(ex.Message.ToString());
-                }
-
             }
 
 
