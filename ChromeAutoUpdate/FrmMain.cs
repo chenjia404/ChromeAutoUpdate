@@ -336,6 +336,13 @@ namespace ChromeAutoUpdate
             //替换环境变量
             app_path = app_path.Replace("%localappdata%", localappdata);
             log("安装目录:" + app_path);
+
+            //判断chrome目录是否存在，不存在就创建
+            FileInfo fi = new FileInfo(app_path);
+            var di = fi.Directory;
+            if (!di.Exists)
+                di.Create();
+
             app_filename = app_path + "chrome.exe";
 
             user_agent += " ChromeAutoUpdate/" + Application.ProductVersion.ToString();
