@@ -245,6 +245,8 @@ namespace ChromeAutoUpdate
 
             string Channel = "Dev";
 
+            string bit = IntPtr.Size.ToString();
+
             bool app_is_run = false;
 
             if (File.Exists(Application.StartupPath + @"\config.ini"))
@@ -328,6 +330,10 @@ namespace ChromeAutoUpdate
                 string ini_Channel = config.ReadValue("app", "Channel");
                 if (ini_Channel.Length > 3)
                     Channel = ini_Channel;
+
+                string ini_bit = config.ReadValue("app", "bit");
+                if (ini_bit.Length > 3)
+                    bit = ini_bit;
             }
 
 
@@ -403,7 +409,7 @@ namespace ChromeAutoUpdate
             }
 
 
-            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + IntPtr.Size.ToString() + "&Channel=" + Channel);
+            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel);
             if (api.Length > 10)
             {
                 //this.Visible = true;

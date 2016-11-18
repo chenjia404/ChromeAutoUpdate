@@ -31,6 +31,8 @@ bug反馈联系微博@你的档案。
 
 1.11.16.21:判断chrome安装目录是否存在，解决第一次使用的时候，由于目录不存在，导致程序无法响应。
 
+1.11.16.21:增加bit参数
+
 #配置文件
 
 [server]
@@ -54,3 +56,5 @@ user_agent="Mozilla/5.0(Windows NT 10.0; Win64; x64) AppleWebKit/537.36(KHTML, l
 path=C:\soft\ChromeAutoUpdate\ #chrome安装目录，需要 \ 结尾
 
 Channel=dev   #取值 'Stable','Beta','Dev','Canary'
+
+bit=8         # int字节位数 8是64系统，4是32位
