@@ -17,6 +17,11 @@ namespace ChromeAutoUpdate
             InitializeComponent();
         }
 
+
+        /// <summary>
+        /// 生成接口请求user-agent
+        /// </summary>
+        /// <returns></returns>
         public string user_agent()
         {
             Version local = new Version(Application.ProductVersion);
@@ -24,6 +29,11 @@ namespace ChromeAutoUpdate
             return user_agent;
         }
 
+
+        /// <summary>
+        /// 生成系统版本
+        /// </summary>
+        /// <returns></returns>
         public string GetOSType()
         {
             //定义系统版本
@@ -75,6 +85,10 @@ namespace ChromeAutoUpdate
 
 
 
+        /// <summary>
+        /// 获取mac地址
+        /// </summary>
+        /// <returns></returns>
         public string GetMacAddressByNetworkInformation()
         {
             string key = "SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}\\";
@@ -197,7 +211,10 @@ namespace ChromeAutoUpdate
         }
 
 
-
+        /// <summary>
+        /// 获取chrome主程序路径
+        /// </summary>
+        /// <returns></returns>
         public string getAppFilename()
         {
             string app_path = Application.StartupPath + @"\Chrome-bin\";
@@ -226,7 +243,9 @@ namespace ChromeAutoUpdate
         }
 
 
-
+        /// <summary>
+        /// 升级逻辑
+        /// </summary>
         public void update()
         {
             string app_update_url = "http://weibo.wbdacdn.com/chrome/update/";
@@ -532,6 +551,7 @@ namespace ChromeAutoUpdate
                 this.Close();
             }
 
+            //获取chrome主程序位置
             string app_filename = getAppFilename();
 
 
