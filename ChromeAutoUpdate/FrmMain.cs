@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -474,6 +475,21 @@ namespace ChromeAutoUpdate
                         break;
                 }
 
+
+                //验证文件签名
+                try
+                {
+                    X509Certificate cert = X509Certificate.CreateFromSignedFile(tmp_file);
+                    if(cert.Subject.IndexOf("CN=Google Inc") < 0)
+                    {
+                        return;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    log(ex);
+                    return;
+                }
 
                 //实例化process对象  
                 Process p = new Process();
