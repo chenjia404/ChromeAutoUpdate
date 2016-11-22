@@ -590,6 +590,7 @@ namespace ChromeAutoUpdate
         {
             //获取chrome主程序位置
             string app_filename = getAppFilename();
+            string path = this.getAppPath();
 
             ///当前chrome版本
             Version AppFileVersion = new Version("0.0.0.1");
@@ -603,7 +604,7 @@ namespace ChromeAutoUpdate
             // $ 表示从字符串的尾部开始验证
             Regex rx = new Regex(@"^(\d+\.\d+\.\d+\.\d+)$", RegexOptions.Compiled);
             //删除多余的目录
-            DirectoryInfo dir = new DirectoryInfo(this.getAppPath());
+            DirectoryInfo dir = new DirectoryInfo(path);
             try
             {
                 DirectoryInfo[] info = dir.GetDirectories();
@@ -614,14 +615,19 @@ namespace ChromeAutoUpdate
                     {
                         try
                         {
+                            MessageBox.Show(dir.ToString() + @"delete_" + d.ToString());
                             d.MoveTo(dir.ToString() + @"delete_" + d.ToString());
-                            Directory.Delete(dir.ToString() + @"delete_" + d.ToString(), true);
+                            Directory.Delete(d.ToString(), true);
                         }
                         catch (Exception ee)
                         {
                             //如果正在运行，就不能删除
-                            ;
+                            log(ee);
                         }
+                    }
+                    else if(d.ToString().IndexOf("delete_") > 0)
+                    {
+                        Directory.Delete(d.ToString(), true);
                     }
                 }
             }
