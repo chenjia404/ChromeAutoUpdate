@@ -428,6 +428,12 @@ namespace ChromeAutoUpdate
                 File.Delete(app_filename + ".old");
             }
 
+            //删除更新目录
+            if(Directory.Exists("update"))
+            {
+                Directory.Delete("update", true);
+            }
+
 
             //升级自身
             string updater = GetWebContent(update_url + "?v=" + Application.ProductVersion);
@@ -503,7 +509,6 @@ namespace ChromeAutoUpdate
                 p.Start();//启动程序  
 
                 string cmd = @"7zr.exe -y e " + tmp_file + System.Environment.NewLine;
-                cmd += "move \"" + app_filename + "\"  \"" + app_path + "chrome.exe.old\"" + System.Environment.NewLine;
                 cmd += @"7zr.exe -y x chrome.7z -oupdate" + Environment.NewLine;
                 cmd += "del " + tmp_file + Environment.NewLine + "exit" + Environment.NewLine;
 
@@ -518,8 +523,8 @@ namespace ChromeAutoUpdate
                 Version chromeVersion = new Version(FileVersionInfo.GetVersionInfo(@"update\Chrome-bin\chrome.exe").FileVersion);
 
                 //移动chrome.exe
-                log(@"update\Chrome-bin\chrome.exe" + "到" + app_filename);
-                File.Move(@"update\Chrome-bin\chrome.exe", app_filename);
+                log(@"update\Chrome-bin\chrome.exe" + "到" + app_filename + @".new");
+                File.Move(@"update\Chrome-bin\chrome.exe", app_filename+@".new");
 
                 try
                 {
@@ -592,54 +597,73 @@ namespace ChromeAutoUpdate
             string app_filename = getAppFilename();
             string path = this.getAppPath();
 
-            ///当前chrome版本
-            Version AppFileVersion = new Version("0.0.0.1");
-            if (File.Exists(app_filename))
-            {
-                AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename).FileVersion);
-            }
 
-            //定义用于验证正整数的表达式
-            // ^ 表示从字符串的首部开始验证
-            // $ 表示从字符串的尾部开始验证
-            Regex rx = new Regex(@"^(\d+\.\d+\.\d+\.\d+)$", RegexOptions.Compiled);
-            //删除多余的目录
-            DirectoryInfo dir = new DirectoryInfo(path);
-            try
+
+            //使用新版
+            if (File.Exists(app_filename + ".new"))
             {
-                DirectoryInfo[] info = dir.GetDirectories();
-                foreach (DirectoryInfo d in info)
+                try
                 {
-                    //判断是否是当前运行版本
-                    if (rx.IsMatch(d.ToString()) && d.ToString() != AppFileVersion.ToString())
+                    File.Delete(app_filename);
+                    File.Move(app_filename + ".new", app_filename);
+
+                    ///当前chrome版本
+                    Version AppFileVersion = new Version("0.0.0.1");
+                    if (File.Exists(app_filename))
                     {
-                        try
+                        AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename).FileVersion);
+                    }
+
+                    //定义用于验证正整数的表达式
+                    // ^ 表示从字符串的首部开始验证
+                    // $ 表示从字符串的尾部开始验证
+                    Regex rx = new Regex(@"^(\d+\.\d+\.\d+\.\d+)$", RegexOptions.Compiled);
+                    //删除多余的目录
+                    DirectoryInfo dir = new DirectoryInfo(path);
+                    try
+                    {
+                        DirectoryInfo[] info = dir.GetDirectories();
+                        foreach (DirectoryInfo d in info)
                         {
-                            MessageBox.Show(dir.ToString() + @"delete_" + d.ToString());
-                            d.MoveTo(dir.ToString() + @"delete_" + d.ToString());
-                            Directory.Delete(d.ToString(), true);
-                        }
-                        catch (Exception ee)
-                        {
-                            //如果正在运行，就不能删除
-                            log(ee);
+                            //判断是否是当前运行版本
+                            if (rx.IsMatch(d.ToString()) && d.ToString() != AppFileVersion.ToString())
+                            {
+                                try
+                                {
+                                    d.MoveTo(dir.ToString() + @"delete_" + d.ToString());
+                                    Directory.Delete(d.ToString(), true);
+                                }
+                                catch (Exception ee)
+                                {
+                                    //如果正在运行，就不能删除
+                                    log(ee);
+                                }
+                            }
+                            else if (d.ToString().IndexOf("delete_") > 0)
+                            {
+                                Directory.Delete(d.ToString(), true);
+                            }
                         }
                     }
-                    else if(d.ToString().IndexOf("delete_") > 0)
+                    catch (Exception ee)
                     {
-                        Directory.Delete(d.ToString(), true);
+                        MessageBox.Show(ee.Message);
                     }
                 }
+                catch(Exception ex)
+                {
+                    log(ex);
+                }
             }
-            catch (Exception ee)
-            {
-                MessageBox.Show(ee.Message);
-            }
+            
         }
 
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
+            //删除老文件
+            this.deleteOld();
+
             int processCount = 0;
             Process[] pa = Process.GetProcesses();//获取当前进程数组。
             foreach (Process PTest in pa)
@@ -653,9 +677,6 @@ namespace ChromeAutoUpdate
             {
                 this.Close();
             }
-
-            //删除老文件
-            this.deleteOld();
 
 
             //获取chrome主程序位置
