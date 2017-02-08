@@ -414,6 +414,7 @@ namespace ChromeAutoUpdate
                 string[] urls = api.Split('|');
                 foreach (string url in urls)
                 {
+                    AddItemToListBox("下载:"+ url);
                     if (DownloadFileProg(url, tmp_file))
                         break;
                 }

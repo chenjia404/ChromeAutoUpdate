@@ -311,8 +311,8 @@ namespace ChromeAutoUpdate
                 this.TopLevel = true;
             }
 
-            uListener = new UdpListener();
-            uListener.StartListener();
+            Thread th = new Thread(StartListener);
+            th.Start();
 
             try
             {
@@ -326,6 +326,15 @@ namespace ChromeAutoUpdate
             }
         }
 
+
+        /// <summary>
+        /// 启动监听
+        /// </summary>
+        public void StartListener()
+        {
+            uListener = new UdpListener();
+            uListener.StartListener();
+        }
 
         public void startApp()
         {

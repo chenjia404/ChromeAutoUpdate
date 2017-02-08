@@ -28,6 +28,18 @@ namespace ChromeAutoUpdate
         }
 
         /// <summary>
+        /// 计算哈希值
+        /// </summary>
+        /// <param name="str">要计算哈希值的字符串</param>
+        /// <returns>sha1</returns>
+        public string sha1(string str)
+        {
+            byte[] StrRes = Encoding.Default.GetBytes(str);
+            byte[] hashBytes = System.Security.Cryptography.SHA1.Create().ComputeHash(StrRes);
+            return BitConverter.ToString(hashBytes).Replace("-", "");
+        }
+
+        /// <summary>
         /// 生成公私钥
         /// </summary>
         /// <param name="PrivateKeyPath"></param>
@@ -87,30 +99,19 @@ namespace ChromeAutoUpdate
                 throw;
             }
         }
-        
+
+
         /// <summary>
-        /// 读取公钥
+        /// 读取文件
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="filename"></param>
         /// <returns></returns>
-        public string ReadPublicKey(string path)
+        public string readFile(string filename)
         {
-            StreamReader reader = new StreamReader(path);
-            string publickey = reader.ReadToEnd();
+            StreamReader reader = new StreamReader(filename);
+            string str = reader.ReadToEnd();
             reader.Close();
-            return publickey;
-        }
-        /// <summary>
-        /// 读取私钥
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        public string ReadPrivateKey(string path)
-        {
-            StreamReader reader = new StreamReader(path);
-            string privatekey = reader.ReadToEnd();
-            reader.Close();
-            return privatekey;
+            return str.Trim();
         }
     }
 }
