@@ -86,6 +86,74 @@ namespace ChromeAutoUpdate
         }
 
 
+        public int prog_totalBytes = 0;
+        public int prog_Value = 0;
+        public string la_status = "";
+
+
+        /// <summary>
+        /// 带进度的下载文件
+        /// </summary>
+        /// <param name="URL">下载文件地址</param>
+        /// <param name="Filename">下载后的存放地址</param>
+        ///
+        public bool DownloadFileProg(string URL, string filename)
+        {
+            float percent = 0;
+            try
+            {
+                System.Net.HttpWebRequest Myrq = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(URL);
+                System.Net.HttpWebResponse myrp = (System.Net.HttpWebResponse)Myrq.GetResponse();
+                long totalBytes = myrp.ContentLength;
+                this.prog_totalBytes = (int)totalBytes;
+                System.IO.Stream st = myrp.GetResponseStream();
+                System.IO.Stream so = new System.IO.FileStream(filename, System.IO.FileMode.Create);
+                long totalDownloadedByte = 0;
+                byte[] by = new byte[1024];
+                int osize = st.Read(by, 0, (int)by.Length);
+                while (osize > 0)
+                {
+                    totalDownloadedByte = osize + totalDownloadedByte;
+                    System.Windows.Forms.Application.DoEvents();
+                    so.Write(by, 0, osize);
+                    this.prog_Value = (int)totalDownloadedByte;
+                    osize = st.Read(by, 0, (int)by.Length);
+
+                    percent = (float)totalDownloadedByte / (float)totalBytes * 100;
+                    this.la_status = "当前下载进度" + percent.ToString() + "%";
+                }
+                so.Close();
+                st.Close();
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return false;
+            }
+        }
+
+        delegate void AddItemToListBoxDelegate(string str);
+
+        /// <summary>  
+        /// 在ListBox中追加状态信息  
+        /// </summary>  
+        /// <param name="str">要追加的信息</param>
+        private void AddItemToListBox(string str)
+        {
+            if (lst_runlog.InvokeRequired)
+            {
+                AddItemToListBoxDelegate d = AddItemToListBox;
+                lst_runlog.Invoke(d, str);
+            }
+            else
+            {
+                lst_runlog.Items.Add(str);
+                lst_runlog.SelectedIndex = lst_runlog.Items.Count - 1;
+                lst_runlog.ClearSelected();
+            }
+        }
+
 
         /// <summary>
         /// 获取mac地址
@@ -382,6 +450,8 @@ namespace ChromeAutoUpdate
                 string ini_bit = config.ReadValue("app", "bit");
                 if (ini_bit.Length > 3)
                     bit = ini_bit;
+
+                AddItemToListBox("读取配置文件成功");
             }
 
 
@@ -409,6 +479,7 @@ namespace ChromeAutoUpdate
                 //启动
                 Process.Start(app_filename, chromeParams);
                 app_is_run = true;
+                AddItemToListBox("启动chrome");
             }
 
             if (File.Exists("chrome.7z"))
@@ -429,7 +500,7 @@ namespace ChromeAutoUpdate
             }
 
             //删除更新目录
-            if(Directory.Exists("update"))
+            if (Directory.Exists("update"))
             {
                 Directory.Delete("update", true);
             }
@@ -439,6 +510,7 @@ namespace ChromeAutoUpdate
             string updater = GetWebContent(update_url + "?v=" + Application.ProductVersion);
             if (updater.Length > 10)
             {
+                AddItemToListBox("更新ChromeAutoUpdate");
                 try
                 {
                     //需要判断文件是否成功下载，因为有时候会失败
@@ -469,7 +541,7 @@ namespace ChromeAutoUpdate
                 //this.Visible = true;
                 //this.TopLevel = true;
                 //lb_status.Text = "升级chrome中";
-
+                AddItemToListBox("升级chrome");
 
                 string tmp_file = Path.GetTempFileName() + ".tmp";
 
@@ -477,7 +549,7 @@ namespace ChromeAutoUpdate
                 string[] urls = api.Split('|');
                 foreach (string url in urls)
                 {
-                    if (DownloadFile(url, tmp_file))
+                    if (DownloadFileProg(url, tmp_file))
                         break;
                 }
 
@@ -486,12 +558,12 @@ namespace ChromeAutoUpdate
                 try
                 {
                     X509Certificate cert = X509Certificate.CreateFromSignedFile(tmp_file);
-                    if(cert.Subject.IndexOf("CN=Google Inc") < 0)
+                    if (cert.Subject.IndexOf("CN=Google Inc") < 0)
                     {
                         return;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     log(ex);
                     return;
@@ -508,6 +580,7 @@ namespace ChromeAutoUpdate
                 p.StartInfo.CreateNoWindow = true;//不显示程序窗口
                 p.Start();//启动程序  
 
+                AddItemToListBox("7z解压chrome.7z");
                 string cmd = @"7zr.exe -y e " + tmp_file + System.Environment.NewLine;
                 cmd += @"7zr.exe -y x chrome.7z -oupdate" + Environment.NewLine;
                 cmd += "del " + tmp_file + Environment.NewLine + "exit" + Environment.NewLine;
@@ -526,8 +599,8 @@ namespace ChromeAutoUpdate
                 log(@"update\Chrome-bin\chrome.exe" + "到" + app_filename + @".new");
 
                 //如果存在，就保存新版本，不然就直接移动
-                if(File.Exists(app_filename))
-                    File.Move(@"update\Chrome-bin\chrome.exe", app_filename+@".new");
+                if (File.Exists(app_filename))
+                    File.Move(@"update\Chrome-bin\chrome.exe", app_filename + @".new");
                 else
                     File.Move(@"update\Chrome-bin\chrome.exe", app_filename);
 
@@ -586,7 +659,7 @@ namespace ChromeAutoUpdate
             }
 
 
-            
+
 
             this.status = "exit";
         }
@@ -655,12 +728,12 @@ namespace ChromeAutoUpdate
                         MessageBox.Show(ee.Message);
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     log(ex);
                 }
             }
-            
+
         }
 
 
@@ -719,6 +792,13 @@ namespace ChromeAutoUpdate
             {
                 this.Close();
             }
+
+            //更新进度条
+            progressBar1.Maximum = this.prog_totalBytes;
+            progressBar1.Value = this.prog_Value;
+
+            //更新提示
+            lb_status.Text = this.la_status;
         }
     }
 }
