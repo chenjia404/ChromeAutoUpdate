@@ -34,6 +34,7 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.lst_runlog = new System.Windows.Forms.ListBox();
+            this.timer_updater = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // lb_status
@@ -55,7 +56,6 @@
             // timer1
             // 
             this.timer1.Enabled = true;
-            this.timer1.Interval = 1000;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // lst_runlog
@@ -66,6 +66,11 @@
             this.lst_runlog.Name = "lst_runlog";
             this.lst_runlog.Size = new System.Drawing.Size(258, 196);
             this.lst_runlog.TabIndex = 2;
+            // 
+            // timer_updater
+            // 
+            this.timer_updater.Interval = 3600000;
+            this.timer_updater.Tick += new System.EventHandler(this.timer_updater_Tick);
             // 
             // FrmMain
             // 
@@ -78,6 +83,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
             this.Text = "chrome自动更新";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMain_FormClosing);
             this.Load += new System.EventHandler(this.FrmMain_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -90,6 +96,7 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ListBox lst_runlog;
+        private System.Windows.Forms.Timer timer_updater;
     }
 }
 

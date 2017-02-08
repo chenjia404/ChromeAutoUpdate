@@ -55,6 +55,10 @@
     <Compile Include="INI.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="rsa.cs" />
+    <Compile Include="SimpleJson.cs" />
+    <Compile Include="UdpListener.cs" />
+    <Compile Include="update.cs" />
     <EmbeddedResource Include="FrmMain.resx">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </EmbeddedResource>
