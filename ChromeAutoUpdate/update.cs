@@ -316,7 +316,14 @@ namespace ChromeAutoUpdate
 
                 string ini_path = config.ReadValue("app", "path");
                 if (ini_path.Length > 3)
+                {
                     app_path = ini_path;
+                    if(app_path.Substring(app_path.Length-1) != @"\")
+                    {
+                        config.Writue("app", "path", app_path+@"\");
+                        app_path = app_path + @"\";
+                    }
+                }
 
 
                 string ini_Channel = config.ReadValue("app", "Channel");

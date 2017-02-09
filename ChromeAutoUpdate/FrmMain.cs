@@ -24,7 +24,7 @@ namespace ChromeAutoUpdate
         public UdpListener uListener;
 
 
-
+        private INI config;
 
 
         delegate void AddItemToListBoxDelegate(string str);
@@ -138,8 +138,6 @@ namespace ChromeAutoUpdate
             //如果有配置文件
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {
-                INI config = new INI(Application.StartupPath + @"\config.ini");
-
                 string ini_path = config.ReadValue("app", "path");
                 if (ini_path.Length > 3)
                 {
@@ -166,8 +164,6 @@ namespace ChromeAutoUpdate
 
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {
-                INI config = new INI(Application.StartupPath + @"\config.ini");
-
                 string ini_path = config.ReadValue("app", "path");
                 if (ini_path.Length > 3)
                 {
@@ -191,6 +187,9 @@ namespace ChromeAutoUpdate
         /// </summary>
         public void update()
         {
+            if(this.updater == null)
+                this.updater = new update();
+
             this.updater.checkUpdate();
         }
 
@@ -270,7 +269,70 @@ namespace ChromeAutoUpdate
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-            
+
+            #region 配置文件
+            if (File.Exists(Application.StartupPath + @"\config.ini"))
+            {
+                this.config = new INI(Application.StartupPath + @"\config.ini");
+
+                string dht = config.ReadValue("config", "dht");
+
+                if (dht == "1" || Directory.Exists("node"))
+                {
+                    chb_dht.Checked = true;
+                    Thread th = new Thread(StartListener);
+                    th.Start();
+                }
+
+
+                string startup = config.ReadValue("config", "startup");
+                if (startup == "1")
+                    chb_start.Checked = true;
+
+                txt_dir.Text = config.ReadValue("app", "path");
+
+
+                //版本选择
+                string Channel = config.ReadValue("app", "Channel");
+                switch(Channel)
+                {
+                    case "Stable":
+                        rbtnStable.Checked = true;
+                        break;
+                    case "Beta":
+                        rbtnBeta.Checked = true;
+                        break;
+                    case "Dev":
+                        rbtnDev.Checked = true;
+                        break;
+                    case "Canary":
+                        rbtnCanary.Checked = true;
+                        break;
+                    default:
+                        rbtnDev.Checked = true;
+                        break;
+
+                }
+
+
+                //位数
+                string bit = config.ReadValue("app", "bit");
+                switch (bit)
+                {
+                    case "4":
+                        rbtn_bit4.Checked = true;
+                        break;
+                    case "8":
+                        rbtn_bit8.Checked = true;
+                        break;
+                    default:
+                        rbtn_bit4.Checked = true;
+                        break;
+
+                }
+            }
+            #endregion
+
 
             //删除老文件
             this.deleteOld();
@@ -298,6 +360,18 @@ namespace ChromeAutoUpdate
                 this.Visible = false;
                 this.TopLevel = false;
                 this.startApp();
+
+
+                //如果存在就直接启动更新
+                try
+                {
+                    update_th = new Thread(update);
+                    update_th.Start();
+                }
+                catch (Exception ex)
+                {
+                    log(ex);
+                }
             }
             else
             {
@@ -310,20 +384,7 @@ namespace ChromeAutoUpdate
                 this.Visible = true;
                 this.TopLevel = true;
             }
-
-            Thread th = new Thread(StartListener);
-            th.Start();
-
-            try
-            {
-                this.updater = new update();
-                update_th = new Thread(update);
-                update_th.Start();
-            }
-            catch (Exception ex)
-            {
-                log(ex);
-            }
+            
         }
 
 
@@ -348,8 +409,6 @@ namespace ChromeAutoUpdate
 
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {
-                INI config = new INI(Application.StartupPath + @"\config.ini");
-
                 string ini_index = config.ReadValue("app", "index");
                 if (ini_index.Length > 3)
                     index = ini_index;
@@ -420,9 +479,6 @@ namespace ChromeAutoUpdate
                     reg = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
 
 
-
-
-                INI config = new INI(Application.StartupPath + @"\config.ini");
                 if (chb_start.Checked)
                 {
                     config.Writue("config", "startup", "1");
@@ -438,6 +494,63 @@ namespace ChromeAutoUpdate
             {
                 MessageBox.Show("需要管理员权限，请重新打开本程序(右键『已管理员身份运行』后再设置)");
             }
+        }
+
+        private void chb_dht_CheckedChanged(object sender, EventArgs e)
+        {
+            if (File.Exists(Application.StartupPath + @"\config.ini"))
+            {
+                if(chb_dht.Checked)
+                    config.Writue("config", "dht","1");
+                else
+                    config.Writue("config", "dht", "0");
+            }
+        }
+
+        private void btn_dir_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog dilog = new FolderBrowserDialog();
+            dilog.Description = "请选择文件夹";
+            if (dilog.ShowDialog() == DialogResult.OK || dilog.ShowDialog() == DialogResult.Yes)
+            {
+                txt_dir.Text = dilog.SelectedPath + @"\";
+            }
+        }
+
+        private void btn_check_update_Click(object sender, EventArgs e)
+        {
+            update_th = new Thread(update);
+            update_th.Start();
+        }
+
+        private void rbtn_Canary_CheckedChanged(object sender, EventArgs e)
+        {
+            config.Writue("app", "Channel", "Canary");
+        }
+
+        private void rbtn_Beta_CheckedChanged(object sender, EventArgs e)
+        {
+            config.Writue("app", "Channel", "Beta");
+        }
+
+        private void rbtn_dev_CheckedChanged(object sender, EventArgs e)
+        {
+            config.Writue("app", "Channel", "Dev");
+        }
+
+        private void rbtnStable_CheckedChanged(object sender, EventArgs e)
+        {
+            config.Writue("app", "Channel", "Stable");
+        }
+
+        private void rbtn_bit8_CheckedChanged(object sender, EventArgs e)
+        {
+            config.Writue("app", "bit", "8");
+        }
+
+        private void rbtn_bit4_CheckedChanged(object sender, EventArgs e)
+        {
+            config.Writue("app", "bit", "4");
         }
     }
 }
