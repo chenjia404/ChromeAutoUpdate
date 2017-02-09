@@ -60,6 +60,11 @@ namespace ChromeAutoUpdate
                 this.id = UserRsa.sha1(UserRsa.readFile("Public.xml"));
             }
 
+            if(!Directory.Exists("node"))
+            {
+                Directory.CreateDirectory("node");
+            }
+
         }
 
         public void StartListener()
