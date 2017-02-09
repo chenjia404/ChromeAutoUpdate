@@ -413,20 +413,30 @@ namespace ChromeAutoUpdate
             RegistryKey reg = null;
             try
             {
-                string fileName =Application.StartupPath + @"\ChromeAutoUpdate.exe";
-                String name = "ChromeAutoUpdate";
+                string fileName = Application.StartupPath + @"\ChromeAutoUpdate.exe";
+                String name = "ChromeAutoUpdate_" + Application.StartupPath.GetHashCode();
                 reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                 if (reg == null)
                     reg = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
 
-                if (chb_start.Checked)
-                    reg.SetValue(name, fileName);
-                else
-                    reg.SetValue(name, false);
-            }
-            catch
-            {
 
+
+
+                INI config = new INI(Application.StartupPath + @"\config.ini");
+                if (chb_start.Checked)
+                {
+                    config.Writue("config", "startup", "1");
+                    reg.SetValue(name, fileName);
+                }
+                else
+                {
+                    reg.SetValue(name, false);
+                    config.Writue("config", "startup", "0");
+                }
+            }
+            catch(System.Security.SecurityException)
+            {
+                MessageBox.Show("需要管理员权限，请重新打开本程序(右键『已管理员身份运行』后再设置)");
             }
         }
     }

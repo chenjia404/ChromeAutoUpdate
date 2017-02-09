@@ -358,7 +358,7 @@ namespace ChromeAutoUpdate
                     sw.Close();
                 }
             }
-            catch(IOException ex)
+            catch
             {
                 return false;
             }
