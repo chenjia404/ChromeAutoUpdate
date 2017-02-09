@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleJson;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -98,8 +99,15 @@ namespace ChromeAutoUpdate
                 foreach (node n in node_table_tmp.Values)
                 {
                     log("循环ping:"+ n.ip.ToString());
-                    this.ping(n.ip);
-                    Thread.Sleep(1000);
+                    if(node_table.Count > 100)
+                    {
+                        this.ping(n.ip);
+                        Thread.Sleep(1000);
+                    }
+                    else
+                    {
+                        this.find_node(n.ip, "888888888888888888888888888888888888");
+                    }
                 }
 
                 Thread.Sleep(5000);
@@ -136,7 +144,7 @@ namespace ChromeAutoUpdate
 
                     if(remoteIpep.Address.ToString() == local_ip.ToString())
                     {
-                        continue;
+                        //continue;
                     }
 
                     string message = Encoding.Unicode.GetString(bytRecv, 0, bytRecv.Length);
@@ -198,6 +206,42 @@ namespace ChromeAutoUpdate
                                     this.UserRsa.writeFile(@"node\" + this.UserRsa.sha1(json["msg"].ToString().Trim()), (string)json["msg"]);
                                 }
                                 break;
+                            case "find_node":
+                                if(json.ContainsKey("msg"))
+                                {
+                                    this.reply_node(remoteIpep, json["msg"].ToString());
+                                }
+                                break;
+                            case "reply_node":
+                                if (json.ContainsKey("msg"))
+                                {
+                                    try
+                                    {
+                                        JsonArray nodes = (JsonArray)json["msg"];
+                                        foreach(JsonObject n in nodes)
+                                        {
+                                            //添加节点
+                                            if(!node_table.ContainsKey(n["uid"].ToString()))
+                                            {
+                                                node_table.Add(n["uid"].ToString(),
+                                                new node(n["uid"].ToString(),
+                                                new IPEndPoint(IPAddress.Parse(n["ip"].ToString()),
+                                                (int)n["port"]
+                                                )));
+                                                log("find新节点"+ n["uid"].ToString() + n["ip"].ToString());
+                                            }
+                                            else
+                                            {
+                                                log("find重复节点");
+                                            }
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        continue;
+                                    }
+                                }
+                                break;
                             default:
                                 log("收到未知消息");
                                 break;
@@ -219,10 +263,17 @@ namespace ChromeAutoUpdate
             if (!File.Exists("debug"))
                 return false;
             string filename = DateTime.Now.ToString("yyyy-MM-dd") + ".udplog.log";
-            using (StreamWriter sw = new StreamWriter(@filename, true))//覆盖模式写入
+            try
             {
-                sw.WriteLine(DateTime.Now.ToLongTimeString() + " udp:" + msg);
-                sw.Close();
+                using (StreamWriter sw = new StreamWriter(@filename, true))//覆盖模式写入
+                {
+                    sw.WriteLine(DateTime.Now.ToLongTimeString() + " udp:" + msg);
+                    sw.Close();
+                }
+            }
+            catch(IOException ex)
+            {
+                return false;
             }
             return true;
         }
@@ -307,6 +358,63 @@ namespace ChromeAutoUpdate
         }
 
 
+
+        /// <summary>
+        /// 查找节点
+        /// </summary>
+        /// <param name="remoteIpep"></param>
+        /// <param name="uid"></param>
+        public void reply_node(IPEndPoint remoteIpep, string uid)
+        {
+            var obj = new Dictionary<string, object>();
+            obj["type"] = "reply_node";
+            obj["version"] = this.version;
+            obj["uid"] = this.id;
+
+            Hashtable share_node = new Hashtable();
+
+            Hashtable node_table_tmp = (Hashtable)node_table.Clone();
+
+            foreach (node n in node_table_tmp.Values)
+            {
+                if (share_node.Values.Count < 10)
+                {
+                    share_node.Add(n.uid, n);
+                }
+                else
+                {
+                    foreach (node ns in share_node.Values)
+                    {
+                        if (distance(ns.uid, uid) < distance(n.uid, uid))
+                        {
+                            share_node.Remove(n.uid);
+                            share_node.Add(n.uid, n);
+                        }
+                    }
+                }
+            }
+
+            JsonArray list_share_node = new JsonArray();
+
+            foreach (node ns in share_node.Values)
+            {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject["uid"] = ns.uid;
+                jsonObject["ip"] = ns.ip.Address.ToString();
+                jsonObject["port"] = ns.ip.Port.ToString();
+                list_share_node.Add(jsonObject);
+            }
+
+            obj["msg"] = list_share_node;
+
+            string json = SimpleJson.SimpleJson.SerializeObject(obj);
+
+            byte[] sendbytes = Encoding.Unicode.GetBytes(json);
+            log("发送reply_node");
+            udpcRecv.Send(sendbytes, sendbytes.Length, remoteIpep);
+        }
+
+
         /// <summary>
         /// 查找节点
         /// </summary>
@@ -324,7 +432,28 @@ namespace ChromeAutoUpdate
 
             byte[] sendbytes = Encoding.Unicode.GetBytes(json);
 
+            log("发送find_node");
             udpcRecv.Send(sendbytes, sendbytes.Length, remoteIpep);
+        }
+
+
+        /// <summary>
+        /// 用户距离
+        /// </summary>
+        /// <returns></returns>
+        public int distance(string a,string b)
+        {
+            int distance = 0;
+
+            for (int i = 0; i < a.Length && i < b.Length;i++)
+            {
+                if(a.Substring(i) != b.Substring(i))
+                {
+                    distance++;
+                }
+            }
+
+            return distance;
         }
     }
 }
