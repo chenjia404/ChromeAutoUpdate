@@ -82,6 +82,13 @@ namespace ChromeAutoUpdate
 
             IPEndPoint remoteIpep = new IPEndPoint(IPAddress.Broadcast, this.udp_port); // 发送到的IP地址和端口号
 
+
+            if (File.Exists("node/node.json"))
+            {
+                log("读取node/node.json");
+                loadNode();
+            }
+
             while (true)
             {
                 if (node_table.Count == 0)
@@ -119,6 +126,86 @@ namespace ChromeAutoUpdate
                         node_table.Remove(n.uid);
                         log("用户下线：" + n.ip.ToString());
                     }
+                }
+
+
+                node_table_tmp = (Hashtable)node_table.Clone();
+                JsonArray list_share_node = new JsonArray();
+
+                foreach (node ns in node_table_tmp.Values)
+                {
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject["uid"] = ns.uid;
+                    jsonObject["ip"] = ns.ip.Address.ToString();
+                    jsonObject["port"] = ns.ip.Port.ToString();
+                    list_share_node.Add(jsonObject);
+                }
+
+                if(node_table_tmp.Values.Count > 0)
+                {
+                    string json = SimpleJson.SimpleJson.SerializeObject(list_share_node);
+                    writeFile("node/node.json", json);
+                }
+            }
+
+        }
+
+        public void writeFile(string path, string txt)
+        {
+            try
+            {
+                FileStream file = new FileStream(path, FileMode.Create);
+                StreamWriter sw = new StreamWriter(file);
+                sw.WriteLine(txt);
+                sw.Close();
+                file.Close();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// 读取文件
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public string readFile(string filename)
+        {
+            StreamReader reader = new StreamReader(filename);
+            string str = reader.ReadToEnd();
+            reader.Close();
+            return str.Trim();
+        }
+
+
+        /// <summary>
+        /// 加载节点
+        /// </summary>
+        public void loadNode()
+        {
+            string node_json = readFile("node/node.json");
+
+            var nodes = SimpleJson.SimpleJson.DeserializeObject(node_json.Trim());
+
+            JsonArray file_nodes = (JsonArray)nodes;
+
+            foreach (JsonObject n in file_nodes)
+            {
+                //添加节点
+                if (!node_table.ContainsKey(n["uid"].ToString()))
+                {
+                    node_table.Add(n["uid"].ToString(),
+                    new node(n["uid"].ToString(),
+                    new IPEndPoint(IPAddress.Parse(n["ip"].ToString()),
+                    int.Parse(n["port"].ToString())
+                    )));
+                    log("find新节点" + n["uid"].ToString() + n["ip"].ToString());
+                }
+                else
+                {
+                    log("find重复节点");
                 }
             }
 
