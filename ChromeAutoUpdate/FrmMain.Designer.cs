@@ -35,6 +35,7 @@
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.lst_runlog = new System.Windows.Forms.ListBox();
             this.timer_updater = new System.Windows.Forms.Timer(this.components);
+            this.chb_start = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // lb_status
@@ -72,11 +73,23 @@
             this.timer_updater.Interval = 3600000;
             this.timer_updater.Tick += new System.EventHandler(this.timer_updater_Tick);
             // 
+            // chb_start
+            // 
+            this.chb_start.AutoSize = true;
+            this.chb_start.Location = new System.Drawing.Point(195, 254);
+            this.chb_start.Name = "chb_start";
+            this.chb_start.Size = new System.Drawing.Size(72, 16);
+            this.chb_start.TabIndex = 3;
+            this.chb_start.Text = "开机启动";
+            this.chb_start.UseVisualStyleBackColor = true;
+            this.chb_start.CheckedChanged += new System.EventHandler(this.chb_start_CheckedChanged);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(284, 282);
+            this.Controls.Add(this.chb_start);
             this.Controls.Add(this.lst_runlog);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.lb_status);
@@ -97,6 +110,7 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ListBox lst_runlog;
         private System.Windows.Forms.Timer timer_updater;
+        private System.Windows.Forms.CheckBox chb_start;
     }
 }
 

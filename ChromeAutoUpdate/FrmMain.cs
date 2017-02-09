@@ -407,5 +407,27 @@ namespace ChromeAutoUpdate
                 e.Cancel = true;
             }
         }
+
+        private void chb_start_CheckedChanged(object sender, EventArgs e)
+        {
+            RegistryKey reg = null;
+            try
+            {
+                string fileName =Application.StartupPath + @"\ChromeAutoUpdate.exe";
+                String name = "ChromeAutoUpdate";
+                reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
+                if (reg == null)
+                    reg = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+
+                if (chb_start.Checked)
+                    reg.SetValue(name, fileName);
+                else
+                    reg.SetValue(name, false);
+            }
+            catch
+            {
+
+            }
+        }
     }
 }
