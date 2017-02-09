@@ -144,7 +144,7 @@ namespace ChromeAutoUpdate
 
                     if(remoteIpep.Address.ToString() == local_ip.ToString())
                     {
-                        //continue;
+                        continue;
                     }
 
                     string message = Encoding.Unicode.GetString(bytRecv, 0, bytRecv.Length);
