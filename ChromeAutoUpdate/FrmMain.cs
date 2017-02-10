@@ -348,7 +348,7 @@ namespace ChromeAutoUpdate
             }
             if (processCount > 1)
             {
-                this.Close();
+                System.Environment.Exit(0);
             }
 
             //获取chrome主程序位置
