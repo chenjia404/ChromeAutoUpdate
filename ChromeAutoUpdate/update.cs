@@ -244,6 +244,8 @@ namespace ChromeAutoUpdate
 
             bool app_is_run = File.Exists(app_path+app_filename);
 
+
+            #region 获取配置文件
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {
                 INI config = new INI(Application.StartupPath + @"\config.ini");
@@ -340,6 +342,7 @@ namespace ChromeAutoUpdate
 
                 AddItemToListBox("读取配置文件成功");
             }
+            #endregion
 
 
             string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
@@ -417,6 +420,8 @@ namespace ChromeAutoUpdate
 
 
             string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel);
+
+            #region 升级chrome流程
             if (api.Length > 10)
             {
                 //this.Visible = true;
@@ -525,6 +530,7 @@ namespace ChromeAutoUpdate
             {
                 AddItemToListBox("没有新版本chrome");
             }
+            #endregion
 
             while (!File.Exists(app_filename))
             {
@@ -539,6 +545,7 @@ namespace ChromeAutoUpdate
                 //启动
                 Process.Start(app_filename, chromeParams);
             }
+            AddItemToListBox("结束本次更新");
         }
     }
 }

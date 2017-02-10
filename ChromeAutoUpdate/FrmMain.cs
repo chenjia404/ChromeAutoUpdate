@@ -269,7 +269,6 @@ namespace ChromeAutoUpdate
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
-
             #region 配置文件
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {
@@ -401,8 +400,15 @@ namespace ChromeAutoUpdate
         /// </summary>
         public void StartListener()
         {
-            uListener = new UdpListener();
-            uListener.StartListener();
+            try
+            {
+                uListener = new UdpListener();
+                uListener.StartListener();
+            }
+            catch(Exception ex)
+            {
+                log(ex);
+            }
         }
 
         public void startApp()
@@ -482,18 +488,17 @@ namespace ChromeAutoUpdate
             {
                 string fileName = Application.StartupPath + @"\ChromeAutoUpdate.exe";
                 String name = "ChromeAutoUpdate_" + Application.StartupPath.GetHashCode();
-                reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
-                if (reg == null)
-                    reg = Registry.LocalMachine.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
 
 
-                if (chb_start.Checked)
+                if (chb_start.Checked && config.ReadValue("config", "startup") != "1")
                 {
+                    reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                     config.Writue("config", "startup", "1");
                     reg.SetValue(name, fileName);
                 }
-                else
+                else if(chb_start.Checked == false && config.ReadValue("config", "startup") == "1")
                 {
+                    reg = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", true);
                     reg.SetValue(name, false);
                     config.Writue("config", "startup", "0");
                 }
