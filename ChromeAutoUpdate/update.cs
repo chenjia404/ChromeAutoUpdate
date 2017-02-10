@@ -14,6 +14,7 @@ namespace ChromeAutoUpdate
     {
         public Queue run_log = new Queue();
 
+
         public update()
         {
             this.run_log.Enqueue("升级模块初始化");
@@ -221,6 +222,8 @@ namespace ChromeAutoUpdate
 
         public void checkUpdate()
         {
+            string only_dht = "";
+
             string app_update_url = "http://weibo.wbdacdn.com/chrome/update/";
 
             string update_url = "http://chrome.wbdacdn.com/update.php";
@@ -245,6 +248,7 @@ namespace ChromeAutoUpdate
             {
                 INI config = new INI(Application.StartupPath + @"\config.ini");
 
+                only_dht = config.ReadValue("config", "only_dht");
 
 
                 string config_version = config.ReadValue("config", "version");
@@ -398,6 +402,11 @@ namespace ChromeAutoUpdate
                 }
             }
 
+            //只启用dht功能
+            if(only_dht == "1")
+            {
+                return;
+            }
 
             //升级app
             Version AppFileVersion = new Version("0.0.0.1");
@@ -514,7 +523,7 @@ namespace ChromeAutoUpdate
             }
             else
             {
-                log("不需要更新" + AppFileVersion.ToString());
+                AddItemToListBox("没有新版本chrome");
             }
 
             while (!File.Exists(app_filename))

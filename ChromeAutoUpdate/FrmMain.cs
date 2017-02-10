@@ -351,6 +351,14 @@ namespace ChromeAutoUpdate
                 System.Environment.Exit(0);
             }
 
+            //只运行DHT
+            if (this.config.ReadValue("config", "only_dht") == "1")
+            {
+                this.Visible = false;
+                this.TopLevel = false;
+                return;
+            }
+
             //获取chrome主程序位置
             string app_filename = getAppFilename();
 
