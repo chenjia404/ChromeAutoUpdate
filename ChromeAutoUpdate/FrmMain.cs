@@ -94,36 +94,50 @@ namespace ChromeAutoUpdate
 
 
 
-        
+
 
         public static bool log(Exception ex)
         {
-            if (!File.Exists(Application.StartupPath + @"\debug"))
-                return false;
-            if (!Directory.Exists(Application.StartupPath + @"\log"))
-                Directory.CreateDirectory(Application.StartupPath + @"\log");
-            string filename = Application.StartupPath + @"\log\" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
-            using (StreamWriter sw = new StreamWriter(@filename, true))//覆盖模式写入
+            try
             {
-                sw.WriteLine(DateTime.Now.ToLongTimeString() + " update:" + ex.Message + ex.StackTrace);
-                sw.Close();
+                if (!File.Exists(Application.StartupPath + @"\debug"))
+                    return false;
+                if (!Directory.Exists(Application.StartupPath + @"\log"))
+                    Directory.CreateDirectory(Application.StartupPath + @"\log");
+                string filename = Application.StartupPath + @"\log\" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+                using (StreamWriter sw = new StreamWriter(@filename, true))//覆盖模式写入
+                {
+                    sw.WriteLine(DateTime.Now.ToLongTimeString() + " update:" + ex.Message + ex.StackTrace);
+                    sw.Close();
+                }
+                return true;
             }
-            return true;
+            catch
+            {
+                return false;
+            }
         }
 
         public static bool log(string msg)
         {
-            if (!File.Exists(Application.StartupPath + @"\debug"))
-                return false;
-            if (!Directory.Exists(Application.StartupPath + @"\log"))
-                Directory.CreateDirectory(Application.StartupPath + @"\log");
-            string filename = Application.StartupPath + @"\log\" + DateTime.Now.ToString("yyyy-MM-dd") + ".msg.log";
-            using (StreamWriter sw = new StreamWriter(@filename, true))//覆盖模式写入
+            try
             {
-                sw.WriteLine(DateTime.Now.ToLongTimeString() + " update:" + msg);
-                sw.Close();
+                if (!File.Exists(Application.StartupPath + @"\debug"))
+                    return false;
+                if (!Directory.Exists(Application.StartupPath + @"\log"))
+                    Directory.CreateDirectory(Application.StartupPath + @"\log");
+                string filename = Application.StartupPath + @"\log\" + DateTime.Now.ToString("yyyy-MM-dd") + ".msg.log";
+                using (StreamWriter sw = new StreamWriter(@filename, true))//覆盖模式写入
+                {
+                    sw.WriteLine(DateTime.Now.ToLongTimeString() + " update:" + msg);
+                    sw.Close();
+                }
+                return true;
             }
-            return true;
+            catch
+            {
+                return false;
+            }
         }
 
 
@@ -189,8 +203,14 @@ namespace ChromeAutoUpdate
         {
             if(this.updater == null)
                 this.updater = new update();
-
-            this.updater.checkUpdate();
+            try
+            {
+                this.updater.checkUpdate();
+            }
+            catch(Exception ex)
+            {
+                log(ex);
+            }
         }
 
 
@@ -269,6 +289,9 @@ namespace ChromeAutoUpdate
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
+            //更改工作目录
+            Directory.SetCurrentDirectory(Application.StartupPath);
+
             #region 配置文件
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {

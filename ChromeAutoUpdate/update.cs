@@ -485,6 +485,12 @@ namespace ChromeAutoUpdate
                 //移动chrome.exe
                 log(@"update\Chrome-bin\chrome.exe" + "到" + app_filename + @".new");
 
+                //如果存在新版本，就删除新版本
+                if(File.Exists(app_filename + @".new"))
+                {
+                    File.Delete(app_filename + @".new");
+                }
+
                 //如果存在，就保存新版本，不然就直接移动
                 if (File.Exists(app_filename))
                     File.Move(@"update\Chrome-bin\chrome.exe", app_filename + @".new");
