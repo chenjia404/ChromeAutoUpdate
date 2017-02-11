@@ -370,6 +370,7 @@ namespace ChromeAutoUpdate
             }
             if (processCount > 1)
             {
+                this.startApp();
                 System.Environment.Exit(0);
             }
 
