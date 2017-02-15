@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -419,20 +420,24 @@ namespace ChromeAutoUpdate
             }
 
 
-            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel);
+            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel + "&format=json");
+
+            var apiJson = (IDictionary<string, object>)SimpleJson.SimpleJson.DeserializeObject(api);
+
+            Version serverVersion = new Version(apiJson["version"].ToString());
 
             #region 升级chrome流程
-            if (api.Length > 10)
+            if (serverVersion > AppFileVersion)
             {
                 //this.Visible = true;
                 //this.TopLevel = true;
                 //lb_status.Text = "升级chrome中";
-                AddItemToListBox("升级chrome");
+                AddItemToListBox("升级chrome(" + apiJson["version"].ToString());
 
                 string tmp_file = Path.GetTempFileName() + ".tmp";
 
                 ///多个下载地址重试
-                string[] urls = api.Split('|');
+                string[] urls = apiJson["url"].ToString().Split('|');
                 foreach (string url in urls)
                 {
                     AddItemToListBox("下载:"+ url);
