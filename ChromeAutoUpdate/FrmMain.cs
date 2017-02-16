@@ -495,6 +495,12 @@ namespace ChromeAutoUpdate
 
         private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
+            //后台状态，不提示
+            if(!this.Visible)
+            {
+                return;
+            }
+
             if (MessageBox.Show("确定要退出吗?", "关闭提示", MessageBoxButtons.OKCancel) == DialogResult.OK)//如果点击“确定”按钮
             {
                 System.Environment.Exit(0);
