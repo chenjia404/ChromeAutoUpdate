@@ -12,8 +12,11 @@ namespace ChromeAutoUpdate
 {
     public partial class FrmMain : Form
     {
-        public FrmMain()
+        public string[] cmd_args;
+
+        public FrmMain(string[] args)
         {
+            this.cmd_args = args;
             InitializeComponent();
         }
 
@@ -289,6 +292,13 @@ namespace ChromeAutoUpdate
 
         private void FrmMain_Load(object sender, EventArgs e)
         {
+            bool set_from = false;
+
+            if (this.cmd_args.Length > 0)
+            {
+                set_from = "-set" == this.cmd_args[0].ToString();
+            }
+
             //更改工作目录
             Directory.SetCurrentDirectory(Application.StartupPath);
 
@@ -368,7 +378,7 @@ namespace ChromeAutoUpdate
                     processCount += 1;
                 }
             }
-            if (processCount > 1)
+            if (processCount > 1 && !set_from)
             {
                 this.startApp();
                 System.Environment.Exit(0);
@@ -377,8 +387,8 @@ namespace ChromeAutoUpdate
             //只运行DHT
             if (this.config.ReadValue("config", "only_dht") == "1")
             {
-                this.Visible = false;
-                this.TopLevel = false;
+                this.Visible = set_from;
+                this.TopLevel = set_from;
                 return;
             }
 
@@ -388,8 +398,8 @@ namespace ChromeAutoUpdate
 
             if (File.Exists(app_filename))
             {
-                this.Visible = false;
-                this.TopLevel = false;
+                this.Visible = set_from;
+                this.TopLevel = set_from;
                 this.startApp();
 
 
