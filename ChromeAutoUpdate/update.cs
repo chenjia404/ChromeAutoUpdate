@@ -414,7 +414,13 @@ namespace ChromeAutoUpdate
 
             //升级app
             Version AppFileVersion = new Version("0.0.0.1");
-            if (File.Exists(app_filename))
+
+            //如果已经更新了，但是还没有替换文件
+            if (File.Exists(app_filename + ".new"))
+            {
+                AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename + ".new").FileVersion);
+            }
+            else if (File.Exists(app_filename))
             {
                 AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename).FileVersion);
             }
