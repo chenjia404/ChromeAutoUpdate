@@ -175,23 +175,9 @@ namespace ChromeAutoUpdate
         /// <returns></returns>
         public string getAppFilename()
         {
-            string app_path = Application.StartupPath + @"\Chrome-bin\";
+            string app_path = getAppPath();
 
             string app_filename = "chrome.exe";
-
-            if (File.Exists(Application.StartupPath + @"\config.ini"))
-            {
-                string ini_path = config.ReadValue("app", "path");
-                if (ini_path.Length > 3)
-                {
-                    string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
-
-                    //替换环境变量
-                    app_path = app_path.Replace("%localappdata%", localappdata);
-
-                }
-            }
-
 
             app_filename = app_path + app_filename;
 
@@ -277,7 +263,7 @@ namespace ChromeAutoUpdate
                     }
                     catch (Exception ee)
                     {
-                        MessageBox.Show(ee.Message);
+                        log(ee);
                     }
                 }
                 catch (Exception ex)
@@ -365,9 +351,9 @@ namespace ChromeAutoUpdate
             }
             #endregion
 
-
             //删除老文件
             this.deleteOld();
+
 
             int processCount = 0;
             Process[] pa = Process.GetProcesses();//获取当前进程数组。
@@ -473,6 +459,7 @@ namespace ChromeAutoUpdate
             if (user_agent.Length > 35)
                 chromeParams += " --user-agent=\"" + user_agent + "\"";
             chromeParams += " " + index;
+            log("启动:" + app_filename);
             //启动
             Process.Start(app_filename, chromeParams);
             AddItemToListBox("启动chrome");
@@ -604,6 +591,11 @@ namespace ChromeAutoUpdate
         private void rbtn_bit4_CheckedChanged(object sender, EventArgs e)
         {
             config.Writue("app", "bit", "4");
+        }
+
+        private void btn_open_Click(object sender, EventArgs e)
+        {
+            startApp();
         }
     }
 }

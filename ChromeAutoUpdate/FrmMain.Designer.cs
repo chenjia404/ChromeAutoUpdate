@@ -51,6 +51,7 @@
             this.rbtn_bit8 = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.btn_open = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -254,11 +255,23 @@
             this.panel2.Size = new System.Drawing.Size(200, 31);
             this.panel2.TabIndex = 14;
             // 
+            // btn_open
+            // 
+            this.btn_open.AccessibleRole = System.Windows.Forms.AccessibleRole.PageTabList;
+            this.btn_open.Location = new System.Drawing.Point(310, 340);
+            this.btn_open.Name = "btn_open";
+            this.btn_open.Size = new System.Drawing.Size(81, 23);
+            this.btn_open.TabIndex = 15;
+            this.btn_open.Text = "打开浏览器";
+            this.btn_open.UseVisualStyleBackColor = true;
+            this.btn_open.Click += new System.EventHandler(this.btn_open_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(484, 439);
+            this.Controls.Add(this.btn_open);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btn_check_update);
@@ -307,6 +320,7 @@
         private System.Windows.Forms.RadioButton rbtn_bit8;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Button btn_open;
     }
 }
 
