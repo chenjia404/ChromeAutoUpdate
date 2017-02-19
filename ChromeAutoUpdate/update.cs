@@ -442,7 +442,7 @@ namespace ChromeAutoUpdate
             }
 
 
-            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel + "&format=json");
+            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel + "&format=json" + "&uid=" + this.uid);
 
             var apiJson = (IDictionary<string, object>)SimpleJson.SimpleJson.DeserializeObject(api);
 
