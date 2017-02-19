@@ -15,6 +15,7 @@ namespace ChromeAutoUpdate
     {
         public Queue run_log = new Queue();
 
+        //唯一用户id，用于统计用户数
         public string uid = "";
 
 
