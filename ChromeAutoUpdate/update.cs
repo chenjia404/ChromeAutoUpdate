@@ -15,10 +15,25 @@ namespace ChromeAutoUpdate
     {
         public Queue run_log = new Queue();
 
+        public string uid = "";
+
 
         public update()
         {
             this.run_log.Enqueue("升级模块初始化");
+
+
+            rsa UserRsa = new rsa();
+            //不存在就创建
+            if (!File.Exists("Private.xml") || !File.Exists("Public.xml"))
+            {
+                UserRsa.RSAKey("Private.xml", "Public.xml");
+                this.uid = UserRsa.sha1(UserRsa.readFile("Public.xml"));
+            }
+            else
+            {
+                this.uid = UserRsa.sha1(UserRsa.readFile("Public.xml"));
+            }
         }
 
         /// <summary>
@@ -387,7 +402,7 @@ namespace ChromeAutoUpdate
 
 
             //升级自身
-            string updater = GetWebContent(update_url + "?v=" + Application.ProductVersion);
+            string updater = GetWebContent(update_url + "?v=" + Application.ProductVersion + "&uid=" + this.uid);
             if (updater.Length > 10)
             {
                 AddItemToListBox("更新ChromeAutoUpdate");
