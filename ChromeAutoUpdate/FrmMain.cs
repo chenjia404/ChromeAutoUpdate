@@ -394,6 +394,9 @@ namespace ChromeAutoUpdate
                 {
                     update_th = new Thread(update);
                     update_th.Start();
+
+                    //启动定时更新检查
+                    timer_updater.Enabled = true;
                 }
                 catch (Exception ex)
                 {
