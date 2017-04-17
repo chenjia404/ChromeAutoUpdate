@@ -11,6 +11,8 @@
 
 每次更新后，下次启动chrome即可生效。
 
+提示adobe flash版本过旧，下载:http://fpdownload.macromedia.com/pub/flashplayer/latest/help/install_flash_player_ppapi.exe 即可。
+
 目前是测试版，功能还不齐全，每天都会更新添加功能。
 
 注意:本工具不支持xp。
