@@ -501,6 +501,13 @@ namespace ChromeAutoUpdate
                 return;
             }
 
+            //关机不提示
+            if(e.CloseReason == CloseReason.WindowsShutDown)
+            {
+                System.Environment.Exit(0);
+            }
+
+
             if (MessageBox.Show("确定要退出吗?", "关闭提示", MessageBoxButtons.OKCancel) == DialogResult.OK)//如果点击“确定”按钮
             {
                 System.Environment.Exit(0);
@@ -510,6 +517,9 @@ namespace ChromeAutoUpdate
                 e.Cancel = true;
             }
         }
+
+
+
 
         private void chb_start_CheckedChanged(object sender, EventArgs e)
         {
