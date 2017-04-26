@@ -239,8 +239,6 @@ namespace ChromeAutoUpdate
 
         public void checkUpdate()
         {
-            string only_dht = "";
-
             string app_update_url = "http://weibo.wbdacdn.com/chrome/update/";
 
             string update_url = "http://chrome.wbdacdn.com/update.php";
@@ -266,8 +264,6 @@ namespace ChromeAutoUpdate
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {
                 INI config = new INI(Application.StartupPath + @"\config.ini");
-
-                only_dht = config.ReadValue("config", "only_dht");
 
 
                 string config_version = config.ReadValue("config", "version");
@@ -420,14 +416,6 @@ namespace ChromeAutoUpdate
                 {
                     log(ex.Message.ToString());
                 }
-            }
-
-            //只启用dht功能
-            if(only_dht == "1")
-            {
-                AddItemToListBox("只启用dht功能");
-                log("只启用dht功能");
-                return;
             }
 
             //升级app
