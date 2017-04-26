@@ -422,14 +422,6 @@ namespace ChromeAutoUpdate
                 }
             }
 
-            //只启用dht功能
-            if(only_dht == "1")
-            {
-                AddItemToListBox("只启用dht功能");
-                log("只启用dht功能");
-                return;
-            }
-
             //升级app
             Version AppFileVersion = new Version("0.0.0.1");
 
