@@ -610,5 +610,11 @@ namespace ChromeAutoUpdate
         {
             startApp();
         }
+
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.Visible = !this.TopLevel;
+            this.TopLevel = !this.TopLevel;
+        }
     }
 }
