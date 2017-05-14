@@ -611,10 +611,52 @@ namespace ChromeAutoUpdate
             startApp();
         }
 
+
+        /// <summary>
+        /// 通知栏右下角双击
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             this.Visible = !this.TopLevel;
             this.TopLevel = !this.TopLevel;
+        }
+
+
+        /// <summary>
+        /// 关于
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripMenuItem_about_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/chenjia404/ChromeAutoUpdate");
+        }
+
+
+        /// <summary>
+        /// 检测更新
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripMenuItem_update_Click(object sender, EventArgs e)
+        {
+            update_th = new Thread(update);
+            update_th.Start();
+        }
+
+        /// <summary>
+        /// 退出
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripMenuItem_exit_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("确定要退出吗?", "关闭提示", MessageBoxButtons.OKCancel) == DialogResult.OK)//如果点击“确定”按钮
+            {
+                System.Environment.Exit(0);
+            }
         }
     }
 }
