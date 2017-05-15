@@ -186,29 +186,34 @@ namespace ChromeAutoUpdate
         public void loadNode()
         {
             string node_json = readFile("node/node.json");
-
-            var nodes = SimpleJson.SimpleJson.DeserializeObject(node_json.Trim());
-
-            JsonArray file_nodes = (JsonArray)nodes;
-
-            foreach (JsonObject n in file_nodes)
+            try
             {
-                //添加节点
-                if (!node_table.ContainsKey(n["uid"].ToString()))
+                var nodes = SimpleJson.SimpleJson.DeserializeObject(node_json.Trim());
+                JsonArray file_nodes = (JsonArray)nodes;
+
+                foreach (JsonObject n in file_nodes)
                 {
-                    node_table.Add(n["uid"].ToString(),
-                    new node(n["uid"].ToString(),
-                    new IPEndPoint(IPAddress.Parse(n["ip"].ToString()),
-                    int.Parse(n["port"].ToString())
-                    )));
-                    log("find新节点" + n["uid"].ToString() + n["ip"].ToString());
-                }
-                else
-                {
-                    log("find重复节点");
+                    //添加节点
+                    if (!node_table.ContainsKey(n["uid"].ToString()))
+                    {
+                        node_table.Add(n["uid"].ToString(),
+                        new node(n["uid"].ToString(),
+                        new IPEndPoint(IPAddress.Parse(n["ip"].ToString()),
+                        int.Parse(n["port"].ToString())
+                        )));
+                        log("find新节点" + n["uid"].ToString() + n["ip"].ToString());
+                    }
+                    else
+                    {
+                        log("find重复节点");
+                    }
                 }
             }
-
+            catch(Exception ex)
+            {
+                log("node/node.json 解析异常");
+                return;
+            }
         }
 
 
