@@ -73,7 +73,7 @@ namespace ChromeAutoUpdate
             while (PortInUse(this.udp_port))
                 this.udp_port++;
             IPEndPoint localIpep = new IPEndPoint(IPAddress.Any, this.udp_port); // 本机IP和监听端口号
-            log("监听端口:" + this.udp_port.ToString());
+            log("监听端口:" + localIpep.ToString());
             udpcRecv = new UdpClient(localIpep);
             
             thrRecv = new Thread(ReceiveMessage);
@@ -94,12 +94,13 @@ namespace ChromeAutoUpdate
 
 
             //UPnP绑定端口
+            log("UPnP绑定端口");
             upnp();
 
 
             while (true)
             {
-                if (node_table.Count == 0)
+                if (node_table.Count <= 5)
                 {
                     for(int i= 20172;i<20182;i++)
                     this.ping(new IPEndPoint(IPAddress.Broadcast, i));
@@ -215,7 +216,7 @@ namespace ChromeAutoUpdate
                         new IPEndPoint(IPAddress.Parse(n["ip"].ToString()),
                         int.Parse(n["port"].ToString())
                         )));
-                        log("find新节点" + n["uid"].ToString() + n["ip"].ToString());
+                        log("find新节点 " + n["uid"].ToString() + ":" + n["ip"].ToString());
                     }
                     else
                     {
@@ -358,7 +359,6 @@ namespace ChromeAutoUpdate
                 catch (Exception ex)
                 {
                     log( ex.Message);
-                    break;
                 }
             }
         }
@@ -613,11 +613,13 @@ namespace ChromeAutoUpdate
             //错误判断
             if (mappings == null)
             {
+                log("没有检测到路由器，或者路由器不支持UPnP功能。");
                 return;
             }
 
             //添加之前的ipv4变量（内网IP），内部端口，和外部端口
             mappings.Add(eport, "TCP", this.udp_port, ipv4.ToString(), true, "ChromeAutoUpdate");
+            log("UPnP:" + eport.ToString());
         }
 
 
