@@ -1,10 +1,12 @@
-﻿using SimpleJson;
+﻿using Microsoft.Win32;
+using SimpleJson;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -45,10 +47,7 @@ namespace ChromeAutoUpdate
 
         public UdpListener()
         {
-            //获取Host Name
-            var name = Dns.GetHostName();
-            //从当前Host Name解析IP地址，筛选IPv4地址是本机的内网IP地址。
-            local_ip = Dns.GetHostEntry(name).AddressList.Where(i => i.AddressFamily == AddressFamily.InterNetwork).FirstOrDefault();
+            local_ip = get_local_ip();
 
             //不存在就创建
             if (!File.Exists("Private.xml") || !File.Exists("Public.xml"))
@@ -145,6 +144,11 @@ namespace ChromeAutoUpdate
                 {
                     string json = SimpleJson.SimpleJson.SerializeObject(list_share_node);
                     writeFile("node/node.json", json);
+                    log("保存node.json");
+                }
+                else
+                {
+                    log("没有节点");
                 }
             }
 
@@ -546,6 +550,41 @@ namespace ChromeAutoUpdate
             }
 
             return distance;
+        }
+
+
+        /// <summary>
+        /// 获取本地ip
+        /// </summary>
+        /// <returns></returns>
+        public IPAddress get_local_ip()
+        {
+            NetworkInterface[] fNetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (NetworkInterface adapter in fNetworkInterfaces)
+            {
+                string fRegistryKey = "SYSTEM\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}\\" + adapter.Id + "\\Connection";
+                RegistryKey rk = Registry.LocalMachine.OpenSubKey(fRegistryKey, false);
+                if (rk != null)
+                {
+                    // 区分 PnpInstanceID
+                    // 如果前面有 PCI 就是本机的真实网卡
+                    // MediaSubType 为 01 则是常见网卡，02为无线网卡。
+                    string fPnpInstanceID = rk.GetValue("PnpInstanceID", "").ToString();
+                    int fMediaSubType = Convert.ToInt32(rk.GetValue("MediaSubType", 0));
+                    if (fPnpInstanceID.Length > 3 && fPnpInstanceID.Substring(0, 3) == "PCI")
+                    {
+                        IPInterfaceProperties fIPInterfaceProperties = adapter.GetIPProperties();
+
+                        UnicastIPAddressInformationCollection UnicastIPAddressInformationCollection = fIPInterfaceProperties.UnicastAddresses;
+                        foreach (UnicastIPAddressInformation UnicastIPAddressInformation in UnicastIPAddressInformationCollection)
+                        {
+                            return UnicastIPAddressInformation.Address;
+                        }
+
+                    }
+                }
+            }
+            return null;
         }
     }
 }
