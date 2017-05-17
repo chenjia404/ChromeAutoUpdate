@@ -334,7 +334,7 @@ namespace ChromeAutoUpdate
                                                 new IPEndPoint(IPAddress.Parse(n["ip"].ToString()),
                                                 (int)n["port"]
                                                 )));
-                                                log("find新节点"+ n["uid"].ToString() + n["ip"].ToString());
+                                                log("find新节点 "+ n["uid"].ToString() + ":" + n["ip"].ToString());
                                             }
                                             else
                                             {
