@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using NATUPNPLib;
 using SimpleJson;
 using System;
 using System.Collections;
@@ -87,6 +88,11 @@ namespace ChromeAutoUpdate
                 log("读取node/node.json");
                 loadNode();
             }
+
+
+            //UPnP绑定端口
+            upnp();
+
 
             while (true)
             {
@@ -585,6 +591,29 @@ namespace ChromeAutoUpdate
                 }
             }
             return null;
+        }
+
+
+
+        public void upnp()
+        {
+            //UPnP绑定信息
+            Random rd = new Random();
+            var eport = rd.Next(12000,13000);
+            IPAddress ipv4 = this.local_ip;
+
+            //创建COM类型
+            var upnpnat = new UPnPNAT();
+            var mappings = upnpnat.StaticPortMappingCollection;
+
+            //错误判断
+            if (mappings == null)
+            {
+                return;
+            }
+
+            //添加之前的ipv4变量（内网IP），内部端口，和外部端口
+            mappings.Add(eport, "TCP", this.udp_port, ipv4.ToString(), true, "ChromeAutoUpdate");
         }
     }
 }
