@@ -70,7 +70,10 @@ namespace ChromeAutoUpdate
 
         public void StartListener()
         {
+            while (PortInUse(this.udp_port))
+                this.udp_port++;
             IPEndPoint localIpep = new IPEndPoint(IPAddress.Any, this.udp_port); // 本机IP和监听端口号
+            log("监听端口:" + this.udp_port.ToString());
             udpcRecv = new UdpClient(localIpep);
             
             thrRecv = new Thread(ReceiveMessage);
@@ -98,7 +101,8 @@ namespace ChromeAutoUpdate
             {
                 if (node_table.Count == 0)
                 {
-                    this.ping(new IPEndPoint(IPAddress.Broadcast, this.udp_port));
+                    for(int i= 20172;i<20182;i++)
+                    this.ping(new IPEndPoint(IPAddress.Broadcast, i));
                     log("广播局域网");
                 }
                 else
@@ -614,6 +618,36 @@ namespace ChromeAutoUpdate
 
             //添加之前的ipv4变量（内网IP），内部端口，和外部端口
             mappings.Add(eport, "TCP", this.udp_port, ipv4.ToString(), true, "ChromeAutoUpdate");
+        }
+
+
+        public static bool PortInUse(int port)
+        {
+            bool inUse = false;
+
+            IPGlobalProperties ipProperties = IPGlobalProperties.GetIPGlobalProperties();
+            IPEndPoint[] ipEndPoints = ipProperties.GetActiveUdpListeners();
+
+            foreach (IPEndPoint endPoint in ipEndPoints)
+            {
+                if (endPoint.Port == port)
+                {
+                    return true;
+                }
+            }
+
+
+            ipEndPoints = ipProperties.GetActiveTcpListeners();
+
+            foreach (IPEndPoint endPoint in ipEndPoints)
+            {
+                if (endPoint.Port == port)
+                {
+                    inUse = true;
+                    break;
+                }
+            }
+            return inUse;
         }
     }
 }
