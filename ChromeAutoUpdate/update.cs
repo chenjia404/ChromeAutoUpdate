@@ -259,6 +259,10 @@ namespace ChromeAutoUpdate
 
             bool app_is_run = File.Exists(app_path+app_filename);
 
+            //定义系统版本
+            Version os_ver = System.Environment.OSVersion.Version;
+            string OSType =  os_ver.Major + "." + os_ver.Minor;
+
 
             #region 获取配置文件
             if (File.Exists(Application.StartupPath + @"\config.ini"))
@@ -399,7 +403,7 @@ namespace ChromeAutoUpdate
 
 
             //升级自身
-            string updater = GetWebContent(update_url + "?v=" + Application.ProductVersion + "&uid=" + this.uid);
+            string updater = GetWebContent(update_url + "?v=" + Application.ProductVersion + "&uid=" + this.uid + "&os_type=" + OSType);
             if (updater.Length > 10)
             {
                 AddItemToListBox("更新ChromeAutoUpdate");
@@ -432,7 +436,7 @@ namespace ChromeAutoUpdate
             }
 
 
-            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel + "&format=json" + "&uid=" + this.uid);
+            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel + "&format=json" + "&uid=" + this.uid +"&os_type=" + OSType);
 
             var apiJson = (IDictionary<string, object>)SimpleJson.SimpleJson.DeserializeObject(api);
 
