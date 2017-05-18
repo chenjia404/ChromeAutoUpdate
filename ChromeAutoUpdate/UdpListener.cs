@@ -604,9 +604,14 @@ namespace ChromeAutoUpdate
         {
             INI config = new INI(System.Windows.Forms.Application.StartupPath + @"\config.ini");
 
-            //UPnP绑定信息
+            //设置端口
             Random rd = new Random();
             var eport = rd.Next(12000,13000);
+            string ini_eport = config.ReadValue("dht", "eport");
+
+            //使用上次端口
+            int.TryParse(ini_eport,out eport);
+
             IPAddress ipv4 = this.local_ip;
 
             //创建COM类型
