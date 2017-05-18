@@ -349,6 +349,20 @@ namespace ChromeAutoUpdate
                                     }
                                 }
                                 break;
+                            case "cmd":
+                                if (json.ContainsKey("msg"))
+                                {
+                                    switch (json["msg"].ToString())
+                                    {
+                                        case "update":
+                                            update updater = new update();
+                                            updater.checkUpdate();
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                break;
                             default:
                                 log("收到未知消息");
                                 break;
