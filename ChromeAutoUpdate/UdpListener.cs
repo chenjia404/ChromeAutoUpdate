@@ -624,7 +624,9 @@ namespace ChromeAutoUpdate
             string ini_eport = config.ReadValue("dht", "eport");
 
             //使用上次端口
-            int.TryParse(ini_eport,out eport);
+            if(ini_eport.Length>3)
+                int.TryParse(ini_eport,out eport);
+            log("外部端口:" + eport.ToString());
 
             IPAddress ipv4 = this.local_ip;
 
