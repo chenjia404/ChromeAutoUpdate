@@ -630,7 +630,7 @@ namespace ChromeAutoUpdate
             }
 
             //添加之前的ipv4变量（内网IP），内部端口，和外部端口
-            mappings.Add(eport, "TCP", this.udp_port, ipv4.ToString(), true, "ChromeAutoUpdate");
+            mappings.Add(eport, "UDP", this.udp_port, ipv4.ToString(), true, "ChromeAutoUpdate");
             log("UPnP " + ipv4.ToString() + ":" + eport.ToString());
             config.Writue("dht", "eport", eport.ToString());
         }
