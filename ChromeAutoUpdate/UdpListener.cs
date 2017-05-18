@@ -588,7 +588,8 @@ namespace ChromeAutoUpdate
                         UnicastIPAddressInformationCollection UnicastIPAddressInformationCollection = fIPInterfaceProperties.UnicastAddresses;
                         foreach (UnicastIPAddressInformation UnicastIPAddressInformation in UnicastIPAddressInformationCollection)
                         {
-                            return UnicastIPAddressInformation.Address;
+                            if(UnicastIPAddressInformation.Address.AddressFamily == AddressFamily.InterNetwork)
+                                return UnicastIPAddressInformation.Address;
                         }
 
                     }
@@ -601,6 +602,8 @@ namespace ChromeAutoUpdate
 
         public void upnp()
         {
+            INI config = new INI(System.Windows.Forms.Application.StartupPath + @"\config.ini");
+
             //UPnP绑定信息
             Random rd = new Random();
             var eport = rd.Next(12000,13000);
@@ -616,10 +619,15 @@ namespace ChromeAutoUpdate
                 log("没有检测到路由器，或者路由器不支持UPnP功能。");
                 return;
             }
+            else
+            {
+                log("ipv4:" + ipv4.ToString());
+            }
 
             //添加之前的ipv4变量（内网IP），内部端口，和外部端口
             mappings.Add(eport, "TCP", this.udp_port, ipv4.ToString(), true, "ChromeAutoUpdate");
-            log("UPnP:" + eport.ToString());
+            log("UPnP " + ipv4.ToString() + ":" + eport.ToString());
+            config.Writue("dht", "eport", eport.ToString());
         }
 
 
