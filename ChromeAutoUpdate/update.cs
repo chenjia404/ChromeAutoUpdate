@@ -194,61 +194,67 @@ namespace ChromeAutoUpdate
             string path = this.getAppPath();
 
 
-            //使用新版
+            //更新chrome.exe
             if (File.Exists(app_filename + ".new"))
             {
                 try
                 {
                     File.Delete(app_filename);
                     File.Move(app_filename + ".new", app_filename);
+                }
+                catch
+                {
 
-                    ///当前chrome版本
-                    Version AppFileVersion = new Version("0.0.0.1");
-                    if (File.Exists(app_filename))
-                    {
-                        AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename).FileVersion);
-                    }
+                }
+            }
 
-                    //定义用于验证正整数的表达式
-                    // ^ 表示从字符串的首部开始验证
-                    // $ 表示从字符串的尾部开始验证
-                    Regex rx = new Regex(@"^(\d+\.\d+\.\d+\.\d+)$", RegexOptions.Compiled);
-                    //删除多余的目录
-                    DirectoryInfo dir = new DirectoryInfo(path);
-                    try
+            //更新chrome目录
+            try
+            {
+                ///当前chrome版本
+                Version AppFileVersion = new Version("0.0.0.1");
+                if (File.Exists(app_filename))
+                {
+                    AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename).FileVersion);
+                }
+
+                //定义用于验证正整数的表达式
+                // ^ 表示从字符串的首部开始验证
+                // $ 表示从字符串的尾部开始验证
+                Regex rx = new Regex(@"^(\d+\.\d+\.\d+\.\d+)$", RegexOptions.Compiled);
+                //删除多余的目录
+                DirectoryInfo dir = new DirectoryInfo(path);
+                try
+                {
+                    DirectoryInfo[] info = dir.GetDirectories();
+                    foreach (DirectoryInfo d in info)
                     {
-                        DirectoryInfo[] info = dir.GetDirectories();
-                        foreach (DirectoryInfo d in info)
+                        //判断是否是当前运行版本
+                        if (rx.IsMatch(d.ToString()) && d.ToString() != AppFileVersion.ToString())
                         {
-                            //判断是否是当前运行版本
-                            if (rx.IsMatch(d.ToString()) && d.ToString() != AppFileVersion.ToString())
+                            try
                             {
-                                try
-                                {
-                                    d.MoveTo(dir.ToString() + @"delete_" + d.ToString());
-                                    Directory.Delete(d.ToString(), true);
-                                }
-                                catch (Exception ee)
-                                {
-                                    //如果正在运行，就不能删除
-                                    log(ee);
-                                }
-                            }
-                            else if (d.ToString().IndexOf("delete_") > 0)
-                            {
+                                d.MoveTo(dir.ToString() + @"delete_" + d.ToString());
                                 Directory.Delete(d.ToString(), true);
                             }
+                            catch (Exception ee)
+                            {
+                                //如果正在运行，就不能删除
+                                log(ee);
+                            }
+                        }
+                        else if (d.ToString().IndexOf("delete_") > 0)
+                        {
+                            Directory.Delete(d.ToString(), true);
                         }
                     }
-                    catch (Exception ee)
-                    {
-                        log(ee);
-                    }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    log(ex);
                 }
+            }
+            catch
+            {
             }
         }
 
@@ -396,11 +402,11 @@ namespace ChromeAutoUpdate
 
             string bit = IntPtr.Size.ToString();
 
-            bool app_is_run = File.Exists(app_path+app_filename);
+            bool app_is_run = File.Exists(app_path + app_filename);
 
             //定义系统版本
             Version os_ver = System.Environment.OSVersion.Version;
-            string OSType =  os_ver.Major + "." + os_ver.Minor;
+            string OSType = os_ver.Major + "." + os_ver.Minor;
 
 
             #region 获取配置文件
@@ -480,9 +486,9 @@ namespace ChromeAutoUpdate
                 if (ini_path.Length > 3)
                 {
                     app_path = ini_path;
-                    if(app_path.Substring(app_path.Length-1) != @"\")
+                    if (app_path.Substring(app_path.Length - 1) != @"\")
                     {
-                        config.Writue("app", "path", app_path+@"\");
+                        config.Writue("app", "path", app_path + @"\");
                         app_path = app_path + @"\";
                     }
                 }
@@ -579,7 +585,7 @@ namespace ChromeAutoUpdate
             }
 
 
-            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel + "&format=json" + "&uid=" + this.uid +"&os_type=" + OSType);
+            string api = GetWebContent(app_update_url + "?v=" + AppFileVersion.ToString() + "&bit=" + bit + "&Channel=" + Channel + "&format=json" + "&uid=" + this.uid + "&os_type=" + OSType);
 
             var apiJson = (IDictionary<string, object>)SimpleJson.SimpleJson.DeserializeObject(api);
 
@@ -599,7 +605,7 @@ namespace ChromeAutoUpdate
                 string[] urls = apiJson["url"].ToString().Split('|');
                 foreach (string url in urls)
                 {
-                    AddItemToListBox("下载:"+ url);
+                    AddItemToListBox("下载:" + url);
                     if (DownloadFileProg(url, tmp_file))
                         break;
                 }
@@ -650,7 +656,7 @@ namespace ChromeAutoUpdate
                 log(@"update\Chrome-bin\chrome.exe" + "到" + app_filename + @".new");
 
                 //如果存在新版本，就删除新版本
-                if(File.Exists(app_filename + @".new"))
+                if (File.Exists(app_filename + @".new"))
                 {
                     File.Delete(app_filename + @".new");
                 }
