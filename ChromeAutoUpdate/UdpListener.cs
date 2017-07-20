@@ -349,6 +349,20 @@ namespace ChromeAutoUpdate
                                     }
                                 }
                                 break;
+                            case "cmd":
+                                if (json.ContainsKey("msg"))
+                                {
+                                    switch (json["msg"].ToString())
+                                    {
+                                        case "update":
+                                            update updater = new update();
+                                            updater.checkUpdate();
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                }
+                                break;
                             default:
                                 log("收到未知消息");
                                 break;
@@ -610,7 +624,9 @@ namespace ChromeAutoUpdate
             string ini_eport = config.ReadValue("dht", "eport");
 
             //使用上次端口
-            int.TryParse(ini_eport,out eport);
+            if(ini_eport.Length>3)
+                int.TryParse(ini_eport,out eport);
+            log("外部端口:" + eport.ToString());
 
             IPAddress ipv4 = this.local_ip;
 
