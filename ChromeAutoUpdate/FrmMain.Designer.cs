@@ -54,9 +54,9 @@
             this.btn_open = new System.Windows.Forms.Button();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem_exit = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem_update = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem_about = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem_update = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem_exit = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
@@ -287,29 +287,29 @@
             this.toolStripMenuItem_update,
             this.toolStripMenuItem_exit});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(153, 92);
+            this.contextMenuStrip.Size = new System.Drawing.Size(125, 70);
+            // 
+            // toolStripMenuItem_about
+            // 
+            this.toolStripMenuItem_about.Name = "toolStripMenuItem_about";
+            this.toolStripMenuItem_about.Size = new System.Drawing.Size(124, 22);
+            this.toolStripMenuItem_about.Text = "关于";
+            this.toolStripMenuItem_about.Click += new System.EventHandler(this.toolStripMenuItem_about_Click);
+            // 
+            // toolStripMenuItem_update
+            // 
+            this.toolStripMenuItem_update.Name = "toolStripMenuItem_update";
+            this.toolStripMenuItem_update.Size = new System.Drawing.Size(124, 22);
+            this.toolStripMenuItem_update.Text = "检测更新";
+            this.toolStripMenuItem_update.Click += new System.EventHandler(this.toolStripMenuItem_update_Click);
             // 
             // toolStripMenuItem_exit
             // 
             this.toolStripMenuItem_exit.Name = "toolStripMenuItem_exit";
             this.toolStripMenuItem_exit.RightToLeftAutoMirrorImage = true;
-            this.toolStripMenuItem_exit.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem_exit.Size = new System.Drawing.Size(124, 22);
             this.toolStripMenuItem_exit.Text = "退出";
             this.toolStripMenuItem_exit.Click += new System.EventHandler(this.toolStripMenuItem_exit_Click);
-            // 
-            // toolStripMenuItem_update
-            // 
-            this.toolStripMenuItem_update.Name = "toolStripMenuItem_update";
-            this.toolStripMenuItem_update.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem_update.Text = "检测更新";
-            this.toolStripMenuItem_update.Click += new System.EventHandler(this.toolStripMenuItem_update_Click);
-            // 
-            // toolStripMenuItem_about
-            // 
-            this.toolStripMenuItem_about.Name = "toolStripMenuItem_about";
-            this.toolStripMenuItem_about.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem_about.Text = "关于";
-            this.toolStripMenuItem_about.Click += new System.EventHandler(this.toolStripMenuItem_about_Click);
             // 
             // FrmMain
             // 
@@ -328,6 +328,7 @@
             this.Controls.Add(this.lst_runlog);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.lb_status);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FrmMain";
             this.Text = "chrome自动更新";
