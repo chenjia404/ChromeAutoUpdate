@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -18,6 +20,7 @@ namespace ChromeAutoUpdate
         //唯一用户id，用于统计用户数
         public string uid = "";
 
+        private INI config;
 
         public update()
         {
@@ -34,6 +37,11 @@ namespace ChromeAutoUpdate
             else
             {
                 this.uid = UserRsa.sha1(UserRsa.readFile("Public.xml"));
+            }
+
+            if (File.Exists(Application.StartupPath + @"\config.ini"))
+            {
+                this.config = new INI(Application.StartupPath + @"\config.ini");
             }
         }
 
@@ -95,8 +103,29 @@ namespace ChromeAutoUpdate
         public string user_agent()
         {
             Version local = new Version(Application.ProductVersion);
-            string user_agent = "Updater/" + local.ToString() + " " + this.GetOSType();
+            string user_agent = "Updater/" + local.ToString() + " " + this.GetOSType() + " net4.5/" + this.GetNet45Version();
             return user_agent;
+        }
+
+
+        /// <summary>
+        /// 获取.net4.5的版本
+        /// </summary>
+        /// <returns></returns>
+        public string GetNet45Version()
+        {
+            try
+            {
+                RegistryKey net45 = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full", false);
+                if (net45 == null)
+                    return "";
+
+                return net45.GetValue("Version").ToString();
+            }
+            catch
+            {
+                return "";
+            }
         }
 
 
@@ -108,10 +137,120 @@ namespace ChromeAutoUpdate
         {
             //定义系统版本
             Version ver = System.Environment.OSVersion.Version;
-            string OSType = " (Windows NT " + ver.Major + "." + ver.Minor + ")";
+            string OSType = "(Windows NT " + ver.Major + "." + ver.Minor + ")";
             return OSType;
         }
 
+
+        /// <summary>
+        /// 获取chrome目录
+        /// </summary>
+        /// <returns></returns>
+        public string getAppPath()
+        {
+            string app_path = Application.StartupPath + @"\Chrome-bin\";
+
+            //如果有配置文件
+            if (File.Exists(Application.StartupPath + @"\config.ini"))
+            {
+                string ini_path = config.ReadValue("app", "path");
+                if (ini_path.Length > 3)
+                {
+                    string localappdata = System.Environment.GetEnvironmentVariable("localappdata");
+
+                    //替换环境变量
+                    app_path = app_path.Replace("%localappdata%", localappdata);
+
+                }
+            }
+
+            return app_path;
+        }
+
+
+        /// <summary>
+        /// 获取chrome主程序路径
+        /// </summary>
+        /// <returns></returns>
+        public string getAppFilename()
+        {
+            string app_path = getAppPath();
+
+            string app_filename = "chrome.exe";
+
+            app_filename = app_path + app_filename;
+
+            return app_filename;
+        }
+
+
+        /// <summary>
+        /// 删除老版本
+        /// </summary>
+        public void deleteOld()
+        {
+            //获取chrome主程序位置
+            string app_filename = getAppFilename();
+            string path = this.getAppPath();
+
+
+            //使用新版
+            if (File.Exists(app_filename + ".new"))
+            {
+                try
+                {
+                    File.Delete(app_filename);
+                    File.Move(app_filename + ".new", app_filename);
+
+                    ///当前chrome版本
+                    Version AppFileVersion = new Version("0.0.0.1");
+                    if (File.Exists(app_filename))
+                    {
+                        AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename).FileVersion);
+                    }
+
+                    //定义用于验证正整数的表达式
+                    // ^ 表示从字符串的首部开始验证
+                    // $ 表示从字符串的尾部开始验证
+                    Regex rx = new Regex(@"^(\d+\.\d+\.\d+\.\d+)$", RegexOptions.Compiled);
+                    //删除多余的目录
+                    DirectoryInfo dir = new DirectoryInfo(path);
+                    try
+                    {
+                        DirectoryInfo[] info = dir.GetDirectories();
+                        foreach (DirectoryInfo d in info)
+                        {
+                            //判断是否是当前运行版本
+                            if (rx.IsMatch(d.ToString()) && d.ToString() != AppFileVersion.ToString())
+                            {
+                                try
+                                {
+                                    d.MoveTo(dir.ToString() + @"delete_" + d.ToString());
+                                    Directory.Delete(d.ToString(), true);
+                                }
+                                catch (Exception ee)
+                                {
+                                    //如果正在运行，就不能删除
+                                    log(ee);
+                                }
+                            }
+                            else if (d.ToString().IndexOf("delete_") > 0)
+                            {
+                                Directory.Delete(d.ToString(), true);
+                            }
+                        }
+                    }
+                    catch (Exception ee)
+                    {
+                        log(ee);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log(ex);
+                }
+            }
+        }
 
 
         /// <summary>
@@ -395,6 +534,10 @@ namespace ChromeAutoUpdate
                 File.Delete(app_filename + ".old");
             }
 
+
+            //删除老文件
+            this.deleteOld();
+
             //删除更新目录
             if (Directory.Exists("update"))
             {
@@ -556,6 +699,20 @@ namespace ChromeAutoUpdate
             else
             {
                 AddItemToListBox("没有新版本chrome");
+
+                //升级chrome 
+                //有的时候正在使用chrome，所有这里需要更新
+                if (File.Exists(app_filename + ".new"))
+                {
+                    try
+                    {
+                        this.deleteOld();
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
             #endregion
 
