@@ -315,6 +315,7 @@ namespace ChromeAutoUpdate
             try
             {
                 System.Net.HttpWebRequest Myrq = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(URL);
+                Myrq.Timeout = 20000;
                 System.Net.HttpWebResponse myrp = (System.Net.HttpWebResponse)Myrq.GetResponse();
                 long totalBytes = myrp.ContentLength;
                 this.prog_totalBytes = (int)totalBytes;
@@ -340,7 +341,7 @@ namespace ChromeAutoUpdate
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                AddItemToListBox("下载失败：" + URL);
                 return false;
             }
         }
