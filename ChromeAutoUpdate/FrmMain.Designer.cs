@@ -57,6 +57,8 @@
             this.toolStripMenuItem_about = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem_update = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem_exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.lbl_Params = new System.Windows.Forms.Label();
+            this.txt_Params = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
@@ -65,7 +67,7 @@
             // lb_status
             // 
             this.lb_status.AutoSize = true;
-            this.lb_status.Location = new System.Drawing.Point(10, 415);
+            this.lb_status.Location = new System.Drawing.Point(10, 499);
             this.lb_status.Name = "lb_status";
             this.lb_status.Size = new System.Drawing.Size(89, 12);
             this.lb_status.TabIndex = 0;
@@ -73,7 +75,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 378);
+            this.progressBar1.Location = new System.Drawing.Point(12, 462);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(470, 23);
             this.progressBar1.TabIndex = 1;
@@ -100,7 +102,7 @@
             // chb_start
             // 
             this.chb_start.AutoSize = true;
-            this.chb_start.Location = new System.Drawing.Point(410, 415);
+            this.chb_start.Location = new System.Drawing.Point(410, 499);
             this.chb_start.Name = "chb_start";
             this.chb_start.Size = new System.Drawing.Size(72, 16);
             this.chb_start.TabIndex = 3;
@@ -111,7 +113,7 @@
             // chb_dht
             // 
             this.chb_dht.AutoSize = true;
-            this.chb_dht.Location = new System.Drawing.Point(362, 415);
+            this.chb_dht.Location = new System.Drawing.Point(362, 499);
             this.chb_dht.Name = "chb_dht";
             this.chb_dht.Size = new System.Drawing.Size(42, 16);
             this.chb_dht.TabIndex = 4;
@@ -147,7 +149,7 @@
             // 
             // btn_check_update
             // 
-            this.btn_check_update.Location = new System.Drawing.Point(397, 340);
+            this.btn_check_update.Location = new System.Drawing.Point(397, 424);
             this.btn_check_update.Name = "btn_check_update";
             this.btn_check_update.Size = new System.Drawing.Size(75, 23);
             this.btn_check_update.TabIndex = 8;
@@ -264,7 +266,7 @@
             // btn_open
             // 
             this.btn_open.AccessibleRole = System.Windows.Forms.AccessibleRole.PageTabList;
-            this.btn_open.Location = new System.Drawing.Point(310, 340);
+            this.btn_open.Location = new System.Drawing.Point(310, 424);
             this.btn_open.Name = "btn_open";
             this.btn_open.Size = new System.Drawing.Size(81, 23);
             this.btn_open.TabIndex = 15;
@@ -311,17 +313,36 @@
             this.toolStripMenuItem_exit.Text = "退出";
             this.toolStripMenuItem_exit.Click += new System.EventHandler(this.toolStripMenuItem_exit_Click);
             // 
+            // lbl_Params
+            // 
+            this.lbl_Params.AutoSize = true;
+            this.lbl_Params.Location = new System.Drawing.Point(16, 331);
+            this.lbl_Params.Name = "lbl_Params";
+            this.lbl_Params.Size = new System.Drawing.Size(53, 12);
+            this.lbl_Params.TabIndex = 5;
+            this.lbl_Params.Text = "启动参数";
+            // 
+            // txt_Params
+            // 
+            this.txt_Params.Location = new System.Drawing.Point(74, 327);
+            this.txt_Params.Name = "txt_Params";
+            this.txt_Params.Size = new System.Drawing.Size(317, 21);
+            this.txt_Params.TabIndex = 16;
+            this.txt_Params.TextChanged += new System.EventHandler(this.txt_Params_TextChanged);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 439);
+            this.ClientSize = new System.Drawing.Size(484, 524);
+            this.Controls.Add(this.txt_Params);
             this.Controls.Add(this.btn_open);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btn_check_update);
             this.Controls.Add(this.btn_dir);
             this.Controls.Add(this.txt_dir);
+            this.Controls.Add(this.lbl_Params);
             this.Controls.Add(this.lbl_dir);
             this.Controls.Add(this.chb_dht);
             this.Controls.Add(this.chb_start);
@@ -373,6 +394,8 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_exit;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_update;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_about;
+        private System.Windows.Forms.Label lbl_Params;
+        private System.Windows.Forms.TextBox txt_Params;
     }
 }
 

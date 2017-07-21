@@ -251,6 +251,11 @@ namespace ChromeAutoUpdate
                 txt_dir.Text = config.ReadValue("app", "path");
 
 
+                //chrome启动参数
+                string Params = config.ReadValue("config", "Params");
+                txt_Params.Text = Params;
+
+
                 //版本选择
                 string Channel = config.ReadValue("app", "Channel");
                 switch(Channel)
@@ -293,6 +298,9 @@ namespace ChromeAutoUpdate
             #endregion
 
 
+            //获取chrome主程序位置
+            string app_filename = getAppFilename();
+
 
             int processCount = 0;
             Process[] pa = Process.GetProcesses();//获取当前进程数组。
@@ -303,9 +311,14 @@ namespace ChromeAutoUpdate
                     processCount += 1;
                 }
             }
+
+            //如果已经有当前实例，启动chrome并退出
             if (processCount > 1 && !set_from)
             {
-                this.startApp();
+                if (File.Exists(app_filename))
+                {
+                    this.startApp();
+                }
                 System.Environment.Exit(0);
             }
 
@@ -316,9 +329,6 @@ namespace ChromeAutoUpdate
                 this.TopLevel = set_from;
                 return;
             }
-
-            //获取chrome主程序位置
-            string app_filename = getAppFilename();
 
 
             if (File.Exists(app_filename))
@@ -382,6 +392,12 @@ namespace ChromeAutoUpdate
             string chromeParams = "";
 
             string user_agent = "";
+
+            if(!File.Exists(app_filename))
+            {
+                AddItemToListBox(app_filename + "不存在");
+                return;
+            }
 
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {
@@ -596,6 +612,11 @@ namespace ChromeAutoUpdate
             {
                 System.Environment.Exit(0);
             }
+        }
+
+        private void txt_Params_TextChanged(object sender, EventArgs e)
+        {
+            config.Writue("app", "Params", txt_Params.Text);
         }
     }
 }
