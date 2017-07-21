@@ -230,6 +230,11 @@ namespace ChromeAutoUpdate
             Directory.SetCurrentDirectory(Application.StartupPath);
 
             #region 配置文件
+
+            //不存在就创建
+            if (!File.Exists(Application.StartupPath + @"\config.ini"))
+                System.IO.File.WriteAllLines(Application.StartupPath + @"\config.ini", new string[0]);
+
             if (File.Exists(Application.StartupPath + @"\config.ini"))
             {
                 this.config = new INI(Application.StartupPath + @"\config.ini");
