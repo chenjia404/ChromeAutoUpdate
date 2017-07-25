@@ -201,31 +201,20 @@ namespace ChromeAutoUpdate
                 {
                     File.Delete(app_filename);
                     File.Move(app_filename + ".new", app_filename);
-                }
-                catch
-                {
 
-                }
-            }
+                    //当前chrome版本
+                    Version AppFileVersion = new Version("0.0.0.1");
+                    if (File.Exists(app_filename))
+                    {
+                        AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename).FileVersion);
+                    }
 
-            //更新chrome目录
-            try
-            {
-                ///当前chrome版本
-                Version AppFileVersion = new Version("0.0.0.1");
-                if (File.Exists(app_filename))
-                {
-                    AppFileVersion = new Version(FileVersionInfo.GetVersionInfo(app_filename).FileVersion);
-                }
-
-                //定义用于验证正整数的表达式
-                // ^ 表示从字符串的首部开始验证
-                // $ 表示从字符串的尾部开始验证
-                Regex rx = new Regex(@"^(\d+\.\d+\.\d+\.\d+)$", RegexOptions.Compiled);
-                //删除多余的目录
-                DirectoryInfo dir = new DirectoryInfo(path);
-                try
-                {
+                    //定义用于验证正整数的表达式
+                    // ^ 表示从字符串的首部开始验证
+                    // $ 表示从字符串的尾部开始验证
+                    Regex rx = new Regex(@"^(\d+\.\d+\.\d+\.\d+)$", RegexOptions.Compiled);
+                    //删除多余的目录
+                    DirectoryInfo dir = new DirectoryInfo(path);
                     DirectoryInfo[] info = dir.GetDirectories();
                     foreach (DirectoryInfo d in info)
                     {
@@ -251,11 +240,10 @@ namespace ChromeAutoUpdate
                 }
                 catch
                 {
+
                 }
             }
-            catch
-            {
-            }
+
         }
 
 
