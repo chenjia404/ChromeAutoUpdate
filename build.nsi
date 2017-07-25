@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "chrome自动升级助手"
-!define PRODUCT_VERSION "1.2017.07.21"
+!define PRODUCT_VERSION "1.2017.07.25"
 !define PRODUCT_PUBLISHER "@你的档案"
 !define PRODUCT_WEB_SITE "https://github.com/chenjia404/ChromeAutoUpdate/"
 !define PRODUCT_DIR_REGKEY "Software\ChromeAutoUpdate\${PRODUCT_NAME}\"
