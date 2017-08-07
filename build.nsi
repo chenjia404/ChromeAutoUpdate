@@ -64,7 +64,6 @@ Section "MainSection" SEC01
   SetOverwrite ifnewer
   File "ChromeAutoUpdate\bin\Release\ChromeAutoUpdate.exe"
   File "ChromeAutoUpdate\bin\Release\7zr.exe"
-  File "ChromeAutoUpdate\bin\Release\config.ini"
 
 ;Shortcuts
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
