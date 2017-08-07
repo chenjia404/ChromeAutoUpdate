@@ -221,6 +221,8 @@ namespace ChromeAutoUpdate
         {
             bool set_from = false;
 
+            this.updater = new update();
+
             if (this.cmd_args.Length > 0)
             {
                 set_from = "-set" == this.cmd_args[0].ToString();
@@ -302,6 +304,7 @@ namespace ChromeAutoUpdate
             }
             #endregion
 
+            this.updater.deleteOld();
 
             //获取chrome主程序位置
             string app_filename = getAppFilename();
