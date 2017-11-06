@@ -3,8 +3,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -625,6 +623,21 @@ namespace ChromeAutoUpdate
         private void txt_Params_TextChanged(object sender, EventArgs e)
         {
             config.Writue("app", "Params", txt_Params.Text);
+        }
+
+        /// <summary>
+        /// 打开程序目录
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btn_opendir_Click(object sender, EventArgs e)
+        {
+            string OpenFolderPath = config.ReadValue("path", "path");
+            if(OpenFolderPath.Length == 0)
+            {
+                OpenFolderPath = Application.StartupPath;
+            }
+            System.Diagnostics.Process.Start("explorer.exe", OpenFolderPath);
         }
     }
 }

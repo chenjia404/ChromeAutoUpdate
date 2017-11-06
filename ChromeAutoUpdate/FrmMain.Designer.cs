@@ -59,6 +59,7 @@
             this.toolStripMenuItem_exit = new System.Windows.Forms.ToolStripMenuItem();
             this.lbl_Params = new System.Windows.Forms.Label();
             this.txt_Params = new System.Windows.Forms.TextBox();
+            this.btn_opendir = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
@@ -330,11 +331,23 @@
             this.txt_Params.TabIndex = 16;
             this.txt_Params.TextChanged += new System.EventHandler(this.txt_Params_TextChanged);
             // 
+            // btn_opendir
+            // 
+            this.btn_opendir.AccessibleRole = System.Windows.Forms.AccessibleRole.PageTabList;
+            this.btn_opendir.Location = new System.Drawing.Point(221, 424);
+            this.btn_opendir.Name = "btn_opendir";
+            this.btn_opendir.Size = new System.Drawing.Size(81, 23);
+            this.btn_opendir.TabIndex = 17;
+            this.btn_opendir.Text = "打开目录";
+            this.btn_opendir.UseVisualStyleBackColor = true;
+            this.btn_opendir.Click += new System.EventHandler(this.btn_opendir_Click);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(484, 524);
+            this.Controls.Add(this.btn_opendir);
             this.Controls.Add(this.txt_Params);
             this.Controls.Add(this.btn_open);
             this.Controls.Add(this.panel2);
@@ -396,6 +409,7 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem_about;
         private System.Windows.Forms.Label lbl_Params;
         private System.Windows.Forms.TextBox txt_Params;
+        private System.Windows.Forms.Button btn_opendir;
     }
 }
 
